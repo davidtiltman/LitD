@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\Krapiwa\\Desktop\\Life in the Deadland\\LitD\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{D951BAEE-A01D-46FA-960E-457A423734F5}|LitD\\LitD.csproj|c:\\users\\krapiwa\\desktop\\life in the deadland\\litd\\litd\\litdgame.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D951BAEE-A01D-46FA-960E-457A423734F5}|LitD\\LitD.csproj|solutionrelative:litd\\litdgame.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{D951BAEE-A01D-46FA-960E-457A423734F5}|LitD\\LitD.csproj|c:\\users\\krapiwa\\desktop\\life in the deadland\\litd\\litd\\core\\texturemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D951BAEE-A01D-46FA-960E-457A423734F5}|LitD\\LitD.csproj|solutionrelative:litd\\core\\texturemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D951BAEE-A01D-46FA-960E-457A423734F5}|LitD\\LitD.csproj|c:\\users\\krapiwa\\desktop\\life in the deadland\\litd\\litd\\litdgame.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D951BAEE-A01D-46FA-960E-457A423734F5}|LitD\\LitD.csproj|solutionrelative:litd\\litdgame.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,17 +18,17 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "LitDGame.cs",
               "DocumentMoniker": "C:\\Users\\Krapiwa\\Desktop\\Life in the Deadland\\LitD\\LitD\\LitDGame.cs",
               "RelativeDocumentMoniker": "LitD\\LitDGame.cs",
               "ToolTip": "C:\\Users\\Krapiwa\\Desktop\\Life in the Deadland\\LitD\\LitD\\LitDGame.cs",
               "RelativeToolTip": "LitD\\LitDGame.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAwwDcAAAA/AAAAAAAAAA==",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAQwDUAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-09T17:24:28.617Z",
               "IsPinned": true,
@@ -40,13 +40,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "TextureManager.cs",
               "DocumentMoniker": "C:\\Users\\Krapiwa\\Desktop\\Life in the Deadland\\LitD\\LitD\\Core\\TextureManager.cs",
               "RelativeDocumentMoniker": "LitD\\Core\\TextureManager.cs",
-              "ToolTip": "C:\\Users\\Krapiwa\\Desktop\\Life in the Deadland\\LitD\\LitD\\Core\\TextureManager.cs",
-              "RelativeToolTip": "LitD\\Core\\TextureManager.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAeAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\Krapiwa\\Desktop\\Life in the Deadland\\LitD\\LitD\\Core\\TextureManager.cs*",
+              "RelativeToolTip": "LitD\\Core\\TextureManager.cs*",
+              "ViewState": "AgIAACMAAAAAAAAAAAAgwB0AAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-09T17:45:53.132Z",
               "EditorCaption": ""
