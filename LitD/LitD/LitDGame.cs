@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using LitD.Core;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -33,7 +34,7 @@ namespace LitD
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            TextureManager.LoadTextures(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -51,7 +52,6 @@ namespace LitD
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-
             base.Draw(gameTime);
         }
 
