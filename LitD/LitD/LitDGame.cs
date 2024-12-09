@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace LitD
 {
@@ -14,7 +15,12 @@ namespace LitD
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            Window.AllowUserResizing = true;
+            Window.ClientSizeChanged += OnResize;
         }
+
+        #region логика игры
 
         protected override void Initialize()
         {
@@ -48,5 +54,16 @@ namespace LitD
 
             base.Draw(gameTime);
         }
+
+        #endregion
+
+        #region ивенты
+
+        private void OnResize(object sender, EventArgs e)
+        {
+            // todo
+        }
+
+        #endregion
     }
 }
