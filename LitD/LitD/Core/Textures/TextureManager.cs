@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -18,10 +19,11 @@ namespace LitD.Core.Textures
          * схема работы такая: я загружаю текстурку в контент-менеджер, а потом получаю ее по названию файла.
          */
 
-        // CM и GD нужны для служебных целей
+        // служебные сущности
         private static ContentManager ContentManager { get; set; }
         private static GraphicsDevice GraphicsDevice { get; set; }
         private static bool IsInit { get; set; } = false;
+        private static string SpritesFolder = "Sprites/";
 
         // хранилище текстур
         private static Dictionary<string, Texture2D> _textureDictionary = new Dictionary<string, Texture2D>();
@@ -50,7 +52,7 @@ namespace LitD.Core.Textures
 
             foreach (var textureName in _textureNames)
             {
-                _textureDictionary.Add(textureName, ContentManager.Load<Texture2D>(textureName));
+                _textureDictionary.Add(textureName, ContentManager.Load<Texture2D>(String.Concat(SpritesFolder, textureName)));
             }
 
             _textureNames.Clear();
@@ -63,13 +65,19 @@ namespace LitD.Core.Textures
         {
             CheckInit();
 
-            try
+            if (_textureDictionary.ContainsKey(textureName))
             {
                 return _textureDictionary[textureName];
             }
-            catch
+            else
             {
                 Texture2D _emptyTexture = new Texture2D(GraphicsDevice, 32, 32);
+
+                Color[] colorData = new Color[32 * 32];
+                for (int i = 0; i < colorData.Length; i++) colorData[i] = Color.Purple;
+
+                _emptyTexture.SetData(colorData);
+
                 return _emptyTexture;
             }
         }
@@ -94,13 +102,11 @@ namespace LitD.Core.Textures
         {
             textureNames = new List<string>();
 
-            string _texDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ContentManager.RootDirectory);
+            string _texDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ContentManager.RootDirectory, SpritesFolder);
             FileInfo[] _files = new DirectoryInfo(_texDir).GetFiles();
 
             foreach (FileInfo file in _files)
             {
-                if (file.Extension != "png") continue;
-
                 string trimmedName = file.Name.Split('.')[0]; // расширение необходимо убрать, иначе Content.Load не найдет файл
                 textureNames.Add(trimmedName);
             }

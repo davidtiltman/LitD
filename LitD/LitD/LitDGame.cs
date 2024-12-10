@@ -58,6 +58,10 @@ namespace LitD
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(TextureManager.GetTexture("w"), new Vector2(100, 100), Color.White);
+            _spriteBatch.End();
+
             // TODO: Add your drawing code here
             base.Draw(gameTime);
         }
