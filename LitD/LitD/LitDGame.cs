@@ -1,4 +1,5 @@
-﻿using LitD.Core;
+﻿using LitD.Core.Textures;
+using LitD.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -27,6 +28,12 @@ namespace LitD
         {
             // TODO: Add your initialization logic here
 
+            System.IO.Directory.CreateDirectory("Saves");
+
+            TextureManager.Init(Content, GraphicsDevice);
+
+            WorldGenerator.Generate();
+
             base.Initialize();
         }
 
@@ -34,7 +41,7 @@ namespace LitD
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            TextureManager.LoadTextures(Content);
+            TextureManager.LoadTextures();
         }
 
         protected override void Update(GameTime gameTime)
