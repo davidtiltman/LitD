@@ -1,4 +1,7 @@
-﻿namespace LitD.World
+﻿using System;
+using System.Text.RegularExpressions;
+
+namespace LitD.World
 {
     internal class WorldManager
     {
@@ -15,6 +18,15 @@
              * 1. создание файла мира
              * 2. генерация первых чанков
              */
+            try
+            {
+                Regex forbiddenChars = new Regex("[/:]");
+                System.IO.File.Create($"Saves/{forbiddenChars.Replace(DateTime.Now.ToString(), "_")}.dat");
+            }
+            catch
+            {
+                throw new Exception("Failed to create new world");
+            }
         }
 
         /// <summary> Загрузка существующего мира. </summary>

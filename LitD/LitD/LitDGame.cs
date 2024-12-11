@@ -28,11 +28,14 @@ namespace LitD
         {
             // TODO: Add your initialization logic here
 
+            #region проверка/создание директорий
             System.IO.Directory.CreateDirectory("Saves");
+            #endregion
+
 
             TextureManager.Init(Content, GraphicsDevice);
 
-            //WorldManager.Generate();
+            WorldManager.CreateNewWorld();
 
             base.Initialize();
         }
