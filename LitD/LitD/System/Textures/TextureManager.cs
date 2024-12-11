@@ -29,7 +29,6 @@ namespace LitD.Core.Textures
         private static string SpritesFolder = "Sprites/";
 
         #region хранилище текстур
-
         private static Dictionary<string, Texture2D> _textureDictionary = new Dictionary<string, Texture2D>();
 
         private static Texture2D _dummyTileTexture = null;
