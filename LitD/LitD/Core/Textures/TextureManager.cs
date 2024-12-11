@@ -16,7 +16,10 @@ namespace LitD.Core.Textures
     {
         /*
          * планируется, что этот менеджер полностью избавит меня от любого гемора, связанного с текстурами.
-         * схема работы такая: я загружаю текстурку в контент-менеджер, а потом получаю ее по названию файла.
+         * идея такая:
+         * 1. добавляем текстуру в проект
+         * 2. вызываем при инициализации игры LoadTextures 1 раз
+         * 3. получаем нужную текстуру по названию файла с помощью GetTexture
          */
 
         // служебные сущности
@@ -25,11 +28,15 @@ namespace LitD.Core.Textures
         private static bool IsInit { get; set; } = false;
         private static string SpritesFolder = "Sprites/";
 
-        // хранилище текстур
+        #region хранилище текстур
+
         private static Dictionary<string, Texture2D> _textureDictionary = new Dictionary<string, Texture2D>();
 
-        #region вызываемое извне
+        private static Texture2D _dummyTileTexture = null;
 
+        #endregion
+
+        #region публичные методы
         /// <summary> Инициализирует менеджер. </summary>
         /// <param name="contentManager"> Контент-менеджер Monogame. </param>
         /// <param name="graphicsDevice"> Графическое устройство Monogame. </param>
@@ -37,6 +44,12 @@ namespace LitD.Core.Textures
         {
             ContentManager = contentManager;
             GraphicsDevice = graphicsDevice;
+
+            Color[] dummyColorData = new Color[32 * 32];
+            for (int i = 0; i < dummyColorData.Length; i++) dummyColorData[i] = Color.Purple;
+
+            _dummyTileTexture = new Texture2D(GraphicsDevice, 32, 32);
+            _dummyTileTexture.SetData(dummyColorData);
 
             IsInit = true;
         }
@@ -71,21 +84,12 @@ namespace LitD.Core.Textures
             }
             else
             {
-                Texture2D _emptyTexture = new Texture2D(GraphicsDevice, 32, 32);
-
-                Color[] colorData = new Color[32 * 32];
-                for (int i = 0; i < colorData.Length; i++) colorData[i] = Color.Purple;
-
-                _emptyTexture.SetData(colorData);
-
-                return _emptyTexture;
+                return _dummyTileTexture;
             }
         }
-
         #endregion
 
         #region служебное
-
         /// <summary> Проверяет менеджер на инициализацию. </summary>
         /// <exception cref="InvalidOperationException"> Если не инициализирован, то бросатеся исключение. </exception>
         private static void CheckInit()
@@ -111,7 +115,6 @@ namespace LitD.Core.Textures
                 textureNames.Add(trimmedName);
             }
         }
-
         #endregion
     }
 }
