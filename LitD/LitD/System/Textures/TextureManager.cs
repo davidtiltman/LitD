@@ -47,7 +47,7 @@ namespace LitD.Core.Textures
             Color[] dummyColorData = new Color[32 * 32];
             for (int i = 0; i < dummyColorData.Length; i++) dummyColorData[i] = Color.Purple;
 
-            _dummyTileTexture = new Texture2D(GraphicsDevice, 32, 32);
+            _dummyTileTexture = new Texture2D(GraphicsDevice, 32, 32); // 32 это "magicNamber", надо бы ввести что-то типа дефолтных свойств
             _dummyTileTexture.SetData(dummyColorData);
 
             IsInit = true;
@@ -101,17 +101,17 @@ namespace LitD.Core.Textures
 
         /// <summary> Подгружает имена текстур в соответствие с именами файлов. </summary>
         /// <param name="texRelativeDir"> Относительный путь к контенту. Извлекается из ContentManager. </param>
-        private static void GetTextureNames(out List<string> textureNames)
+        private static void GetTextureNames(out List<string> _textureNames)
         {
-            textureNames = new List<string>();
+            _textureNames = new List<string>();
 
             string _texDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ContentManager.RootDirectory, SpritesFolder);
             FileInfo[] _files = new DirectoryInfo(_texDir).GetFiles();
 
             foreach (FileInfo file in _files)
             {
-                string trimmedName = file.Name.Split('.')[0]; // расширение необходимо убрать, иначе Content.Load не найдет файл
-                textureNames.Add(trimmedName);
+                string _trimmedName = file.Name.Split('.')[0]; // расширение необходимо убрать, иначе Content.Load не найдет файл
+                _textureNames.Add(_trimmedName);
             }
         }
         #endregion

@@ -21,7 +21,8 @@ namespace LitD.World
             try
             {
                 Regex forbiddenChars = new Regex("[/:]");
-                System.IO.File.Create($"Saves/{forbiddenChars.Replace(DateTime.Now.ToString(), "_")}.dat");
+                string worldFile = $"Saves/{forbiddenChars.Replace(DateTime.Now.ToString(), "_")}.dat";
+                System.IO.File.Create(worldFile);
             }
             catch
             {
@@ -42,8 +43,9 @@ namespace LitD.World
         }
 
         /// <summary> Генерация нового чанка. </summary>
-        public static void GenerateChunk()
+        public static void GenerateChunk(string worldFile)
         {
+            const int CHUNK_SIZE = 32;
         }
     }
 }
