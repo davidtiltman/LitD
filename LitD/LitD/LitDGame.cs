@@ -1,9 +1,11 @@
 ﻿using LitD.Core.Textures;
+using LitD.Entities;
 using LitD.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace LitD
 {
@@ -11,6 +13,8 @@ namespace LitD
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+
+        private List<Entity> _entities = new List<Entity>();
 
         public LitDGame()
         {
@@ -34,8 +38,9 @@ namespace LitD
 
 
             TextureManager.Init(Content, GraphicsDevice);
-
-            WorldManager.CreateNewWorld();
+            /*
+             * LoadContent вызывается во время выполнения
+             */
 
             base.Initialize();
         }
@@ -45,6 +50,10 @@ namespace LitD
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             TextureManager.LoadTextures();
+
+            _entities.Add(new Entity("Dirt", new Vector2(100, 127)));
+            _entities.Add(new Entity("Grass", new Vector2(514, 320)));
+            _entities.Add(new Entity("fjduwhriub23", new Vector2(400, 400)));
         }
 
         protected override void Update(GameTime gameTime)
@@ -60,6 +69,13 @@ namespace LitD
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            _spriteBatch.Begin();
+
+            foreach (Entity entity in _entities)
+                entity.Draw(_spriteBatch, gameTime);
+
+            _spriteBatch.End();
 
             // TODO: Add your drawing code here
             base.Draw(gameTime);
