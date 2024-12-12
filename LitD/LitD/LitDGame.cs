@@ -51,9 +51,9 @@ namespace LitD
 
             TextureManager.LoadTextures();
 
-            _entities.Add(new Entity("Dirt", new Vector2(100, 127)));
+            _entities.Add(new TileEntity("Dirt", new Vector2(100, 127)));
             _entities.Add(new Entity("Grass", new Vector2(514, 320)));
-            _entities.Add(new Entity("fjduwhriub23", new Vector2(400, 400)));
+            _entities.Add(new TileEntity("fjduwhriub23", new Vector2(400, 400)));
         }
 
         protected override void Update(GameTime gameTime)
