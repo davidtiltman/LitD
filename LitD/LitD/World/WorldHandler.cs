@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Text.RegularExpressions;
+
 
 namespace LitD.World
 {
-    internal class WorldManager
+    internal class WorldHandler
     {
+        private const float DefaultTileSize = 32;
         /*
          * todos
          * 1. после генерации записать мир в файл
@@ -12,7 +15,8 @@ namespace LitD.World
          */
 
         /// <summary> Создает новый мир. </summary>
-        public static void CreateNewWorld()
+        /// <returns> Путь к файлу созданного мира. </returns>
+        public static string CreateNew()
         {
             /*
              * 1. создание файла мира
@@ -22,11 +26,18 @@ namespace LitD.World
             {
                 Regex forbiddenChars = new Regex("[/:]");
                 string worldFile = $"Saves/{forbiddenChars.Replace(DateTime.Now.ToString(), "_")}.dat";
-                System.IO.File.Create(worldFile);
+                System.IO.File.Create(worldFile).Close();
+
+                WorldGenerator.GenerateChunk(
+                    worldFile,
+                    ConvertScreenToWorldPosition(new Vector2(0, 0))
+                );
+
+                return worldFile;
             }
-            catch
+            catch (Exception e)
             {
-                throw new Exception("Failed to create new world");
+                throw new Exception($"Failed to create new world!\n{e}");
             }
         }
 
@@ -42,10 +53,12 @@ namespace LitD.World
             // если нет, то GenerateChunk
         }
 
-        /// <summary> Генерация нового чанка. </summary>
-        public static void GenerateChunk(string worldFile)
+        /// <summary> Преобразовывает координаты на экране в мировые координаты. </summary>
+        /// <param name="screenPosition"> Координаты на экране. </param>
+        /// <returns> Мировые координаты </returns>
+        public static Vector2 ConvertScreenToWorldPosition(Vector2 screenPosition)
         {
-            const int CHUNK_SIZE = 32;
+            return new Vector2(screenPosition.X / DefaultTileSize, screenPosition.Y / DefaultTileSize);
         }
     }
 }

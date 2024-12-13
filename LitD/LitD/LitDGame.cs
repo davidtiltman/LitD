@@ -14,8 +14,6 @@ namespace LitD
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private List<Entity> _entities = new List<Entity>();
-
         public LitDGame()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -41,6 +39,7 @@ namespace LitD
             /*
              * LoadContent вызывается во время выполнения
              */
+            string world = WorldHandler.CreateNew();
 
             base.Initialize();
         }
@@ -51,9 +50,6 @@ namespace LitD
 
             TextureManager.LoadTextures();
 
-            _entities.Add(new TileEntity("Dirt", new Vector2(100, 127)));
-            _entities.Add(new Entity("Grass", new Vector2(514, 320)));
-            _entities.Add(new TileEntity("fjduwhriub23", new Vector2(400, 400)));
         }
 
         protected override void Update(GameTime gameTime)
@@ -71,9 +67,6 @@ namespace LitD
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-
-            foreach (Entity entity in _entities)
-                entity.Draw(_spriteBatch, gameTime);
 
             _spriteBatch.End();
 
