@@ -1,6 +1,6 @@
 ﻿using LitD.Core.Textures;
-using LitD.Entities;
 using LitD.World;
+using LitD.World.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;

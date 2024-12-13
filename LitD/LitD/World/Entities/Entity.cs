@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace LitD.Entities
+namespace LitD.World.Entities
 {
     /// <summary> Базовый класс сущности. </summary>
     internal class Entity
@@ -20,9 +20,9 @@ namespace LitD.Entities
 
         #region обновление и отрисовка
         public virtual void Update(GameTime gameTime)
-        {}
+        { }
 
-        public virtual void Draw(SpriteBatch spriteBatch, GameTime gameTime) 
+        public virtual void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             spriteBatch.Draw(EntitySprite, EntityPosition, Color.White);
         }

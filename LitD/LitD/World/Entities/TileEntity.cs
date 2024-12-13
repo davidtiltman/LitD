@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace LitD.Entities
+namespace LitD.World.Entities
 {
     internal class TileEntity : Entity
     {
