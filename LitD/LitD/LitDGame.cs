@@ -39,7 +39,7 @@ namespace LitD
             /*
              * LoadContent вызывается во время выполнения
              */
-            string world = WorldHandler.CreateNew();
+            string world = WorldLoader.CreateNew();
 
             base.Initialize();
         }

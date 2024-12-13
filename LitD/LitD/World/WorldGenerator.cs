@@ -3,6 +3,7 @@ using System.IO;
 
 namespace LitD.World
 {
+    /// <summary> Отвечает за генерацию мира. </summary>
     internal class WorldGenerator
     {
         /// <summary>
@@ -11,13 +12,11 @@ namespace LitD.World
         /// </summary>
         public static void GenerateChunk(string worldFile, Vector2 worldChunkPosition)
         {
-            const int CHUNK_SIZE = 16;
-
             using (StreamWriter output = new StreamWriter(worldFile))
             {
-                for (int i = 0; i < CHUNK_SIZE; i++)
+                for (int i = 0; i < WorldConstants.CHUNK_SIZE; i++)
                 {
-                    for (int j = 0; j < CHUNK_SIZE; j++)
+                    for (int j = 0; j < WorldConstants.CHUNK_SIZE; j++)
                     {
                         output.Write($"[{j};{i}]\t");
                     }
