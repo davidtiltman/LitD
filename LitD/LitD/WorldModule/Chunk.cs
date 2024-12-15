@@ -3,17 +3,19 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Runtime.Serialization;
+using ProtoBuf;
+using LitD.System.SerializableTypes;
 
 namespace LitD.WorldModule
 {
     /// <summary> Сектор в мире, содержащий фиксированное количество тайлов. </summary>
-    [DataContract]
+    [ProtoContract]
     internal class Chunk
     {
-        [DataMember]
-        public Vector2 Position { get; private set; }
+        [ProtoMember(1)]
+        public SerializableVector2 Position { get; private set; }
 
-        [DataMember]
+        [ProtoMember(2)]
         private Entity[] _contentTiles;
 
         public Chunk(Vector2 chunkPosition)
@@ -22,11 +24,8 @@ namespace LitD.WorldModule
             _contentTiles = new Entity[WorldConstants.CHUNK_SIZE * WorldConstants.CHUNK_SIZE];
         }
 
-        public Chunk()
-        {
-            Position = Vector2.Zero;
-            _contentTiles = new Entity[WorldConstants.CHUNK_SIZE * WorldConstants.CHUNK_SIZE];
-        }
+        private Chunk()
+        {}
 
         /// <summary>
         /// Переписывает тайл чанка.

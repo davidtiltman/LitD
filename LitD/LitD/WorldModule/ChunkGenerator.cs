@@ -1,6 +1,7 @@
 ﻿using LitD.WorldModule.Entities;
 using Microsoft.Xna.Framework;
 using System;
+using System.Diagnostics;
 
 namespace LitD.WorldModule
 {
@@ -17,7 +18,7 @@ namespace LitD.WorldModule
         /// </param>
         public static Chunk GenerateChunk(Vector2 worldChunkPosition)
         {
-            Chunk chunk = new Chunk();
+            Chunk chunk = new Chunk(new Vector2(0, 0));
             Entity entity;
 
             for (int i = 0; i < WorldConstants.CHUNK_SIZE; i++)
@@ -45,8 +46,8 @@ namespace LitD.WorldModule
                     entity = new TileEntity(
                          texture,
                          new Vector2(
-                             j * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.X + 300,
-                             i * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.Y + 150
+                             j * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.X + 400,
+                             i * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.Y + 300
                          )
                      );
                     // =========================================

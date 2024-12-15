@@ -7,6 +7,9 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.IO;
 using System.Runtime.Serialization;
+using ProtoBuf;
+using System.Diagnostics;
+using System.Linq;
 
 namespace LitD
 {
@@ -54,19 +57,7 @@ namespace LitD
             TextureManager.LoadTextures();
 
             // загрузка созданного в Initialize мира
-            DataContractSerializer serializer = new DataContractSerializer(typeof(World));
-            using (FileStream fileStream = new FileStream(_worldFile, FileMode.Open))
-            {
-                _world = (World)serializer.ReadObject(fileStream);
-            }
-
-            foreach (Chunk chunk in _world.GetChunks()) 
-            { 
-                foreach (TileEntity tile in chunk.GetTiles())
-                {
-                    tile.InitializeSprite();
-                }
-            }
+            WorldLoader.LoadWorld(_worldFile, out _world);
             // =====================================
         }
 
