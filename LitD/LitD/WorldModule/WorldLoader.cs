@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Runtime.Serialization;
 
-namespace LitD.World
+namespace LitD.WorldModule
 {
     /// <summary> Отвечает за загрузку и создание миров. </summary>
     internal class WorldLoader
@@ -17,20 +19,29 @@ namespace LitD.World
         /// <returns> Путь к файлу созданного мира. </returns>
         public static string CreateNew()
         {
-            /*
-             * 1. создание файла мира
-             * 2. генерация первых чанков
-             */
             try
             {
                 Regex forbiddenChars = new Regex("[/:]");
-                string worldFile = $"Saves/{forbiddenChars.Replace(DateTime.Now.ToString(), "_")}.dat";
-                System.IO.File.Create(worldFile).Close();
+                string worldFile = $"Saves/{forbiddenChars.Replace(DateTime.Now.ToString(), "_")}.xml";
 
-                WorldGenerator.GenerateChunk(
-                    worldFile,
-                    InWorldOperations.ConvertPixelToWorldPosition(new Vector2(0, 0))
+                File.Create(worldFile).Close();
+
+                Chunk firstChunk = ChunkGenerator.GenerateChunk(
+                    new Vector2(0, 0)
                 );
+
+                World world = new World("test world");
+                world.AddChunk(firstChunk);
+                world.AddChunk(ChunkGenerator.GenerateChunk(new Vector2(1, 0)));
+                world.AddChunk(ChunkGenerator.GenerateChunk(new Vector2(0, 1)));
+                world.AddChunk(ChunkGenerator.GenerateChunk(new Vector2(-1, 0)));
+                world.AddChunk(ChunkGenerator.GenerateChunk(new Vector2(0, -1)));
+
+                using (FileStream writer = new FileStream(worldFile, FileMode.Open))
+                {
+                    DataContractSerializer serializer = new DataContractSerializer(typeof(World));
+                    serializer.WriteObject(writer, world);
+                }
 
                 return worldFile;
             }

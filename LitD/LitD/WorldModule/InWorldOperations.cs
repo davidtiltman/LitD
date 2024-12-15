@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace LitD.World
+namespace LitD.WorldModule
 {
-    /// <summary> Отвечает за служебные операции над миром. </summary>
+    /// <summary> Отвечает за служебные операции с миром. </summary>
     internal class InWorldOperations
     {
         /// <summary> Преобразовывает координаты пикселя в мировые координаты. </summary>

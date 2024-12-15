@@ -3,13 +3,17 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
+using System.Runtime.Serialization;
 
-namespace LitD.World.Entities
+namespace LitD.WorldModule.Entities
 {
     /// <summary> Базовый класс сущности. </summary>
+    [DataContract]
+    [KnownType(typeof(TileEntity))]
     internal class Entity
     {
         #region свойства сущности
+        [DataMember]
         public Vector2 EntityPosition { get; private set; }
 
         #region текстура сущности
@@ -17,7 +21,9 @@ namespace LitD.World.Entities
          * в сейв мира текстуру особо не запишешь, поэтому записывать будем её название.
          * затем при загрузке чанка для каждой сущности будет инициализироваться текстура по названию.
          */
+        [DataMember]
         public string EntitySpriteName { get; private set; }
+
         private Texture2D _entitySprite = null;
         public Texture2D EntitySprite
         { 
@@ -25,9 +31,9 @@ namespace LitD.World.Entities
             {
                 return _entitySprite;
             }
-            set
+            private set
             {
-                throw new NotImplementedException("Hot-swapping sprites for entity is not implemented!");
+                _entitySprite = value;
             }
         }
         #endregion
@@ -39,7 +45,16 @@ namespace LitD.World.Entities
             EntityPosition = spawnPosition;
         }
 
+        public Entity()
+        {
+            EntitySpriteName = "Empty";
+            EntityPosition = Vector2.Zero;
+        }
+
+
         #region обновление и отрисовка
+        /// <summary> Инициализирует спрайт сущности. </summary>
+        /// <exception cref="InvalidDataException"> Бросается, если имя спрайта не указано. </exception>
         public virtual void InitializeSprite()
         {
             if (string.IsNullOrEmpty(EntitySpriteName))

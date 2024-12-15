@@ -1,11 +1,12 @@
 ﻿using LitD.Core.Textures;
-using LitD.World;
-using LitD.World.Entities;
+using LitD.WorldModule;
+using LitD.WorldModule.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
 
 namespace LitD
 {
@@ -13,6 +14,9 @@ namespace LitD
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+
+        private string _worldFile;
+        private World _world;
 
         public LitDGame()
         {
@@ -31,15 +35,14 @@ namespace LitD
             // TODO: Add your initialization logic here
 
             #region проверка/создание директорий
-            System.IO.Directory.CreateDirectory("Saves");
+            Directory.CreateDirectory("Saves");
             #endregion
 
 
             TextureManager.Init(Content, GraphicsDevice);
-            /*
-             * LoadContent вызывается во время выполнения
-             */
-            string world = WorldLoader.CreateNew();
+
+            // создание мира пока происходит здесь. Но должно будет по нажатии соответствующей кнопки, когда она появится, ахах
+            _worldFile = WorldLoader.CreateNew();
 
             base.Initialize();
         }
@@ -50,6 +53,21 @@ namespace LitD
 
             TextureManager.LoadTextures();
 
+            // загрузка созданного в Initialize мира
+            DataContractSerializer serializer = new DataContractSerializer(typeof(World));
+            using (FileStream fileStream = new FileStream(_worldFile, FileMode.Open))
+            {
+                _world = (World)serializer.ReadObject(fileStream);
+            }
+
+            foreach (Chunk chunk in _world.GetChunks()) 
+            { 
+                foreach (TileEntity tile in chunk.GetTiles())
+                {
+                    tile.InitializeSprite();
+                }
+            }
+            // =====================================
         }
 
         protected override void Update(GameTime gameTime)
@@ -67,7 +85,7 @@ namespace LitD
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-
+            _world.Draw(_spriteBatch, gameTime);
             _spriteBatch.End();
 
             // TODO: Add your drawing code here
