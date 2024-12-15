@@ -3,7 +3,6 @@ using System;
 using System.Text.RegularExpressions;
 using System.IO;
 using ProtoBuf;
-using System.Xml;
 using LitD.WorldModule.Entities;
 
 namespace LitD.WorldModule
@@ -52,7 +51,7 @@ namespace LitD.WorldModule
             }
         }
 
-        /// <summary> Загрузка существующего мира. </summary>
+        /// <summary> Загрузка существующего мира из файла. </summary>
         public static void LoadWorld(string worldFile, out World world)
         {
             using (FileStream fileStream = new FileStream(worldFile, FileMode.Open))

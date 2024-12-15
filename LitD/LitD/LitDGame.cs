@@ -1,15 +1,10 @@
 ﻿using LitD.Core.Textures;
 using LitD.WorldModule;
-using LitD.WorldModule.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.IO;
-using System.Runtime.Serialization;
-using ProtoBuf;
-using System.Diagnostics;
-using System.Linq;
 
 namespace LitD
 {
@@ -40,7 +35,6 @@ namespace LitD
             #region проверка/создание директорий
             Directory.CreateDirectory("Saves");
             #endregion
-
 
             TextureManager.Init(Content, GraphicsDevice);
 

@@ -1,7 +1,6 @@
 ﻿using LitD.WorldModule.Entities;
 using Microsoft.Xna.Framework;
 using System;
-using System.Diagnostics;
 
 namespace LitD.WorldModule
 {

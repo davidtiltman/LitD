@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
-using System.Runtime.Serialization;
 using ProtoBuf;
 using LitD.System.SerializableTypes;
 
@@ -50,6 +49,7 @@ namespace LitD.WorldModule.Entities
             IsCollidable = isCollidable;
         }
 
+        /// <summary> Пустой конструктор нужен для десериализации. </summary>
         protected Entity()
         { }
 

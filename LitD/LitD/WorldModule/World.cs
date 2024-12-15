@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using ProtoBuf;
 
 namespace LitD.WorldModule
@@ -22,6 +21,7 @@ namespace LitD.WorldModule
             _chunks = new List<Chunk>();
         }
 
+        /// <summary> Пустой конструктор нужен для десериализации. </summary>
         private World()
         { }
 

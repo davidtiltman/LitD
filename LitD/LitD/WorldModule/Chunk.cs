@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Runtime.Serialization;
 using ProtoBuf;
 using LitD.System.SerializableTypes;
 
@@ -24,6 +23,7 @@ namespace LitD.WorldModule
             _contentTiles = new Entity[WorldConstants.CHUNK_SIZE * WorldConstants.CHUNK_SIZE];
         }
 
+        /// <summary> Пустой конструктор нужен для десериализации. </summary>
         private Chunk()
         {}
 

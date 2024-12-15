@@ -3,6 +3,7 @@ using ProtoBuf;
 
 namespace LitD.System.SerializableTypes
 {
+    /// <summary> Сериализуемый аналог Xna.Framework.Vector2. </summary>
     [ProtoContract]
     internal class SerializableVector2
     {
@@ -23,6 +24,7 @@ namespace LitD.System.SerializableTypes
             Y = v.Y;
         }
 
+        /// <summary> Пустой конструктор нужен для десериализации. </summary>
         private SerializableVector2()
         {}
 

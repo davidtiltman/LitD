@@ -12,6 +12,7 @@ namespace LitD.WorldModule.Entities
         {
         }
 
+        /// <summary> Пустой конструктор нужен для десериализации. </summary>
         private TileEntity() : base()
         {}
 
