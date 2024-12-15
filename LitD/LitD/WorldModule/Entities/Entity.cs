@@ -1,27 +1,30 @@
 ﻿using LitD.Core.Textures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.IO;
-using System.Runtime.Serialization;
+using ProtoBuf;
+using LitD.System.SerializableTypes;
 
 namespace LitD.WorldModule.Entities
 {
     /// <summary> Базовый класс сущности. </summary>
-    [DataContract]
-    [KnownType(typeof(TileEntity))]
+    [ProtoContract]
+    [ProtoInclude(101, typeof(TileEntity))]
     internal class Entity
     {
         #region свойства сущности
-        [DataMember]
-        public Vector2 EntityPosition { get; private set; }
+        [ProtoMember(1)]
+        public SerializableVector2 EntityPosition { get; private set; }
+
+        [ProtoMember(2)]
+        public bool IsCollidable { get; private set; }
 
         #region текстура сущности
         /*
          * в сейв мира текстуру особо не запишешь, поэтому записывать будем её название.
          * затем при загрузке чанка для каждой сущности будет инициализироваться текстура по названию.
          */
-        [DataMember]
+        [ProtoMember(3)]
         public string EntitySpriteName { get; private set; }
 
         private Texture2D _entitySprite = null;
@@ -39,17 +42,16 @@ namespace LitD.WorldModule.Entities
         #endregion
         #endregion
 
-        public Entity(string textureName, Vector2 spawnPosition)
+        public Entity(string textureName, Vector2 spawnPosition, bool isCollidable = false)
         {
             EntitySpriteName = textureName;
             EntityPosition = spawnPosition;
+            IsCollidable = isCollidable;
         }
 
-        public Entity()
-        {
-            EntitySpriteName = "Empty";
-            EntityPosition = Vector2.Zero;
-        }
+        /// <summary> Пустой конструктор нужен для десериализации. </summary>
+        protected Entity()
+        { }
 
 
         #region обновление и отрисовка

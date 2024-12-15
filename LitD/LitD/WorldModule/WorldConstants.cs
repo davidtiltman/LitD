@@ -7,7 +7,7 @@
         public const float DEFAULT_TILE_SIZE = 32;
 
         /// <summary> Длина стороны чанка в тайлах. Чанк квадратный. </summary>
-        public const int CHUNK_SIZE = 4;
+        public const int CHUNK_SIZE = 8;
 
         /// <summary> Длина стороны чанка в пикселях. Чанк квадратный. </summary>
         public const int CHUNK_SIZE_IN_PIXELS = (int)DEFAULT_TILE_SIZE * CHUNK_SIZE;

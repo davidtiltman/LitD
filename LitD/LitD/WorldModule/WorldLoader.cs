@@ -2,7 +2,8 @@
 using System;
 using System.Text.RegularExpressions;
 using System.IO;
-using System.Runtime.Serialization;
+using ProtoBuf;
+using LitD.WorldModule.Entities;
 
 namespace LitD.WorldModule
 {
@@ -22,7 +23,7 @@ namespace LitD.WorldModule
             try
             {
                 Regex forbiddenChars = new Regex("[/:]");
-                string worldFile = $"Saves/{forbiddenChars.Replace(DateTime.Now.ToString(), "_")}.xml";
+                string worldFile = $"Saves/{forbiddenChars.Replace(DateTime.Now.ToString(), "_")}.dat";
 
                 File.Create(worldFile).Close();
 
@@ -39,8 +40,7 @@ namespace LitD.WorldModule
 
                 using (FileStream writer = new FileStream(worldFile, FileMode.Open))
                 {
-                    DataContractSerializer serializer = new DataContractSerializer(typeof(World));
-                    serializer.WriteObject(writer, world);
+                    Serializer.Serialize<World>(writer, world);
                 }
 
                 return worldFile;
@@ -51,10 +51,21 @@ namespace LitD.WorldModule
             }
         }
 
-        /// <summary> Загрузка существующего мира. </summary>
-        public static void LoadWorld()
+        /// <summary> Загрузка существующего мира из файла. </summary>
+        public static void LoadWorld(string worldFile, out World world)
         {
-            // чтение файла мира
+            using (FileStream fileStream = new FileStream(worldFile, FileMode.Open))
+            {
+                world = Serializer.Deserialize<World>(fileStream);
+            }
+
+            foreach (Chunk chunk in world.GetChunks())
+            {
+                foreach (TileEntity tile in chunk.GetTiles())
+                {
+                    tile.InitializeSprite();
+                }
+            }
         }
     }
 }

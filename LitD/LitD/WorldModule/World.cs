@@ -1,18 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+using ProtoBuf;
 
 namespace LitD.WorldModule
 {
     /// <summary> Игровой мир, состоящий из чанков. </summary>
-    [DataContract]
+    [ProtoContract]
     internal class World
     {
-        [DataMember]
+        [ProtoMember(1)]
         public string Name { get; private set; }
 
-        [DataMember]
+        [ProtoMember(2)]
         private List<Chunk> _chunks;
 
         public World(string name)
@@ -20,6 +20,10 @@ namespace LitD.WorldModule
             Name = name;
             _chunks = new List<Chunk>();
         }
+
+        /// <summary> Пустой конструктор нужен для десериализации. </summary>
+        private World()
+        { }
 
         /// <summary> Добавляет в мир новый чанк. </summary>
         /// <param name="chunk"> Новый чанк. </param>
