@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using ProtoBuf;
 using LitD.System.SerializableTypes;
+using LitD.WorldModule.Entities.Placeable;
 
 namespace LitD.WorldModule.Entities
 {

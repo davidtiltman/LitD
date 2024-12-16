@@ -1,4 +1,5 @@
 ﻿using LitD.WorldModule.Entities;
+using LitD.WorldModule.Entities.Placeable;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -45,8 +46,8 @@ namespace LitD.WorldModule
                     entity = new TileEntity(
                          texture,
                          new Vector2(
-                             j * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.X + 400,
-                             i * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.Y + 300
+                             j * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.X,
+                             i * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.Y
                          )
                      );
                     // =========================================
