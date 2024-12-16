@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using ProtoBuf;
 
-namespace LitD.WorldModule.Entities
+namespace LitD.WorldModule.Entities.Placeable
 {
     /// <summary> Класс для тайлов, из которых строится мир. </summary>
     [ProtoContract]
@@ -14,7 +14,7 @@ namespace LitD.WorldModule.Entities
 
         /// <summary> Пустой конструктор нужен для десериализации. </summary>
         private TileEntity() : base()
-        {}
+        { }
 
         #region обновление и отрисовка
         public override void Update(GameTime gameTime)

@@ -1,5 +1,7 @@
 ﻿using LitD.Core.Textures;
+using LitD.System.SerializableTypes;
 using LitD.WorldModule;
+using LitD.WorldModule.Entities.Alive.Player;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -15,6 +17,8 @@ namespace LitD
 
         private string _worldFile;
         private World _world;
+        private PlayerEntity _player;
+        private Camera _camera;
 
         public LitDGame()
         {
@@ -40,6 +44,8 @@ namespace LitD
 
             // создание мира пока происходит здесь. Но должно будет по нажатии соответствующей кнопки, когда она появится, ахах
             _worldFile = WorldLoader.CreateNew();
+            _player = new PlayerEntity("Player", new SerializableVector2(0, 0));
+            _camera = new Camera();
 
             base.Initialize();
         }
@@ -52,6 +58,7 @@ namespace LitD
 
             // загрузка созданного в Initialize мира
             WorldLoader.LoadWorld(_worldFile, out _world);
+            _player.InitializeSprite();
             // =====================================
         }
 
@@ -61,6 +68,8 @@ namespace LitD
                 Exit();
 
             // TODO: Add your update logic here
+            _player.Update(gameTime);
+            _camera.Update(_player.EntityPosition, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
 
             base.Update(gameTime);
         }
@@ -69,8 +78,9 @@ namespace LitD
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin();
+            _spriteBatch.Begin(transformMatrix: _camera.Transform);
             _world.Draw(_spriteBatch, gameTime);
+            _player.Draw(_spriteBatch, gameTime);
             _spriteBatch.End();
 
             // TODO: Add your drawing code here
@@ -83,7 +93,8 @@ namespace LitD
 
         private void OnResize(object sender, EventArgs e)
         {
-            // todo
+            _graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+            _graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
         }
 
         #endregion
