@@ -32,12 +32,14 @@ namespace LitD.WorldModule
                 );
 
                 World world = new World("test world");
-                world.AddChunk(firstChunk);
-                world.AddChunk(ChunkGenerator.GenerateChunk(new Vector2(1, 0)));
-                world.AddChunk(ChunkGenerator.GenerateChunk(new Vector2(0, 1)));
-                world.AddChunk(ChunkGenerator.GenerateChunk(new Vector2(-1, 0)));
-                world.AddChunk(ChunkGenerator.GenerateChunk(new Vector2(0, -1)));
-
+                for (int y = -1; y <= 1; y++)  
+                {
+                    for (int x = -3; x <= 3; x++)  
+                    {
+                        Chunk chunk = ChunkGenerator.GenerateChunk(new Vector2(x, y));
+                        world.AddChunk(chunk);
+                    }
+                }
                 using (FileStream writer = new FileStream(worldFile, FileMode.Open))
                 {
                     Serializer.Serialize<World>(writer, world);
