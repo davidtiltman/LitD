@@ -3,7 +3,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.IO;
 using ProtoBuf;
-using LitD.WorldModule.Entities;
+using LitD.WorldModule.Entities.Placeable;
 
 namespace LitD.WorldModule
 {

@@ -1,4 +1,5 @@
 ﻿using LitD.WorldModule.Entities;
+using LitD.WorldModule.Entities.Placeable;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -53,6 +54,8 @@ namespace LitD.WorldModule
                             i * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.Y + 300
                         )
                     );
+
+
 
                     chunk.SetTile(entity, new Vector2(j, i));
                 }
