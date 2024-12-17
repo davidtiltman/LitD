@@ -52,6 +52,14 @@ namespace LitD.WorldModule
             return _contentTiles;
         }
 
+        public void InitializeEntitySprites()
+        {
+            foreach(var entity in GetTiles())
+            {
+                entity.InitializeSprite();
+            }
+        }
+
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             foreach (Entity tile in GetTiles())

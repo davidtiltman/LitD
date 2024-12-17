@@ -50,12 +50,10 @@ namespace LitD.WorldModule
                     entity = new TileEntity(
                         texture,
                         new Vector2(
-                            j * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.X + 400,
-                            i * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.Y + 300
+                            j * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.X,
+                            i * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.Y
                         )
                     );
-
-
 
                     chunk.SetTile(entity, new Vector2(j, i));
                 }

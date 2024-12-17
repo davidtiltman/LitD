@@ -1,4 +1,5 @@
 ﻿using LitD.Core.Textures;
+using LitD.System;
 using LitD.System.SerializableTypes;
 using LitD.WorldModule;
 using LitD.WorldModule.Entities.Alive.Player;
@@ -6,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace LitD
@@ -70,6 +72,14 @@ namespace LitD
             // TODO: Add your update logic here
             _player.Update(gameTime);
             _camera.Update(_player.EntityPosition, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+
+            if(!_world.IsChunkExists(_player.GetChunkPosition()))
+            {
+                _world.AddChunk(
+                    ChunkGenerator.GenerateChunk(_player.GetChunkPosition())
+                );
+            }
+            
 
             base.Update(gameTime);
         }

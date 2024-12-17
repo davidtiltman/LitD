@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace LitD.WorldModule.Entities.Alive.Player
 {
@@ -11,6 +12,14 @@ namespace LitD.WorldModule.Entities.Alive.Player
 
         public PlayerEntity(string textureName, SerializableVector2 spawnPosition, bool isCollidable = false) : base(textureName, spawnPosition, isCollidable)
         {}
+
+        public Vector2 GetChunkPosition()
+        {
+            return new Vector2(
+                (float)Math.Floor(EntityPosition.X / WorldConstants.CHUNK_SIZE_IN_PIXELS),
+                (float)Math.Floor(EntityPosition.Y / WorldConstants.CHUNK_SIZE_IN_PIXELS)            
+            );
+        }
 
         #region обновление и отрисовка
         public virtual void Update(GameTime gameTime)

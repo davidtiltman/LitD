@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using System;
 using LitD.System.SerializableTypes;
 
-namespace LitD.WorldModule.Entities.Alive.Player
+namespace LitD.System
 {
     internal class Camera
     {
