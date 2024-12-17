@@ -5,6 +5,7 @@ using System.IO;
 using ProtoBuf;
 using LitD.WorldModule.Entities.Placeable;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace LitD.WorldModule
 {
@@ -55,6 +56,16 @@ namespace LitD.WorldModule
             using (FileStream fileStream = new FileStream(Path.Combine(worldDirectory, WorldConstants.WORLD_FILE_NAME), FileMode.Open))
             {
                 world = Serializer.Deserialize<World>(fileStream);
+            }
+
+            using (FileStream fileStream = new FileStream(Path.Combine(worldDirectory, WorldConstants.WORLD_CHUNK_FILE_NAME), FileMode.Open))
+            {
+                List<Chunk> chunks = Serializer.Deserialize<List<Chunk>>(fileStream);
+
+                foreach (Chunk chunk in chunks)
+                {
+                    world.AddChunk(chunk);
+                }
             }
         }
     }

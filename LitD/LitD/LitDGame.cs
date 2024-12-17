@@ -17,7 +17,7 @@ namespace LitD
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private string _worldFile;
+        private string _worldDirectory;
         private World _world;
         private PlayerEntity _player;
         private Camera _camera;
@@ -45,7 +45,7 @@ namespace LitD
             TextureManager.Init(Content, GraphicsDevice);
 
             // создание мира пока происходит здесь. Но должно будет по нажатии соответствующей кнопки, когда она появится, ахах
-            _worldFile = WorldLoader.CreateNew();
+            _worldDirectory = WorldLoader.CreateNew();
             _player = new PlayerEntity("Player", new SerializableVector2(0, 0));
             _camera = new Camera();
 
@@ -59,7 +59,8 @@ namespace LitD
             TextureManager.LoadTextures();
 
             // загрузка созданного в Initialize мира
-            WorldLoader.LoadWorld(_worldFile, out _world);
+            //WorldLoader.LoadWorld(_worldDirectory, out _world);
+            WorldLoader.LoadWorld("Saves\\12_17_2024 11_10_17 PM", out _world);
             _player.InitializeSprite();
             // =====================================
         }

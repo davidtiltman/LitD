@@ -13,7 +13,6 @@ namespace LitD.WorldModule
     {
         [ProtoMember(1)]
         public string Name { get; private set; }
-
         private List<Chunk> _loadedChunks = new List<Chunk>();
 
         [ProtoMember(2)]
@@ -39,9 +38,10 @@ namespace LitD.WorldModule
 
             if (isNew)
             {
+                List<Chunk> appendList = new List<Chunk>() { chunk };
                 using (FileStream chunkFile = new FileStream(Path.Combine(_selfDirectory, WorldConstants.WORLD_CHUNK_FILE_NAME), FileMode.Append))
                 {
-                    Serializer.Serialize<Chunk>(chunkFile, chunk);
+                    Serializer.Serialize<List<Chunk>>(chunkFile, appendList);
                 }
             }
         }
