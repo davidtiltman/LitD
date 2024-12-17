@@ -91,7 +91,7 @@ namespace LitD
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin(transformMatrix: _camera.Transform);
-            _world.Draw(_spriteBatch, gameTime);
+            _world.Draw(_spriteBatch, gameTime, _player.GetChunkPosition());
             _player.Draw(_spriteBatch, gameTime);
             _spriteBatch.End();
 

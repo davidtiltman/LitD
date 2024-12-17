@@ -10,7 +10,7 @@ namespace LitD.System
     {
         public Matrix Transform { get; private set; }
         public Vector2 Position { get; private set; }
-        public float Zoom { get; set; } = 1f;
+        public float Zoom { get; set; } = 0.5f;
 
         public Camera()
         {
@@ -19,7 +19,9 @@ namespace LitD.System
 
         public void Update(Vector2 playerPosition, int screenWidth, int screenHeight)
         {
-            Position = playerPosition - new Vector2(screenWidth / 2, screenHeight / 2);
+            Vector2 screenCenter = new Vector2(screenWidth / 2, screenHeight / 2) / Zoom;
+
+            Position = playerPosition - screenCenter;
 
             Transform = Matrix.CreateTranslation(new Vector3(-Position, 0)) *
                          Matrix.CreateScale(Zoom);

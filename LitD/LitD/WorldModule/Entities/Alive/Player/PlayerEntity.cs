@@ -13,6 +13,8 @@ namespace LitD.WorldModule.Entities.Alive.Player
         public PlayerEntity(string textureName, SerializableVector2 spawnPosition, bool isCollidable = false) : base(textureName, spawnPosition, isCollidable)
         {}
 
+        /// <summary> Возвращает чанковые координаты игрока. </summary>
+        /// <returns> Координаты чанка. </returns>
         public Vector2 GetChunkPosition()
         {
             return new Vector2(

@@ -11,9 +11,15 @@ namespace LitD.WorldModule
     [ProtoContract]
     internal class World
     {
+        /// <summary> Название мира. </summary>
         [ProtoMember(1)]
         public string Name { get; private set; }
+
+        /// <summary> Все загруженные чанки. </summary>
         private List<Chunk> _loadedChunks = new List<Chunk>();
+
+        /// <summary> Все видимые чанки вокруг игрока. </summary>
+        private List<Chunk> _visibleChunks = new List<Chunk>();
 
         [ProtoMember(2)]
         private string _selfDirectory;
@@ -65,18 +71,29 @@ namespace LitD.WorldModule
             return false;
         }
 
-        public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
+        public void Draw(SpriteBatch spriteBatch, GameTime gameTime, Vector2 observerPosition)
         {
-            foreach (var chunk in GetLoadedChunks())
+            foreach (var chunk in GetVisibleChunks(observerPosition))
             {
                 chunk.Draw(spriteBatch, gameTime);
             }
         }
 
-        /// <summary> Обновляет массив загруженных чанков. </summary>
-        public void UpdateLoadedChunks()
+        /// <summary> Возвращает список видимых наблюдателем чанков. </summary>
+        /// <param name="observerPosition"> Координаты наблюдателя. </param>
+        public List<Chunk> GetVisibleChunks(Vector2 observerPosition)
         {
-            
+            List<Chunk> visible = new List<Chunk>();
+
+            foreach(var chunk in GetLoadedChunks())
+            {
+                if (Vector2.Distance(chunk.Position, observerPosition) <= WorldConstants.CHUNK_LOAD_DISTANCE)
+                {
+                    visible.Add(chunk);
+                }
+            }
+
+            return visible;
         }
     }
 }
