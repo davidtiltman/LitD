@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using System.IO;
 using ProtoBuf;
 using LitD.WorldModule.Entities.Placeable;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace LitD.WorldModule
 {
@@ -23,29 +25,24 @@ namespace LitD.WorldModule
             try
             {
                 Regex forbiddenChars = new Regex("[/:]");
-                string worldFile = $"Saves/{forbiddenChars.Replace(DateTime.Now.ToString(), "_")}.dat";
+                string worldDirectory = $"Saves/{forbiddenChars.Replace(DateTime.Now.ToString(), "_")}";
+                string worldFile = $"{worldDirectory}/{WorldConstants.WORLD_FILE_NAME}";
+                string chunkFile = $"{worldDirectory}/{WorldConstants.WORLD_CHUNK_FILE_NAME}";
 
+                Directory.CreateDirectory(worldDirectory);
                 File.Create(worldFile).Close();
+                File.Create(chunkFile).Close();
 
-                Chunk firstChunk = ChunkGenerator.GenerateChunk(
-                    new Vector2(0, 0)
-                );
 
-                World world = new World("test world");
-                for (int y = -1; y <= 1; y++)  
-                {
-                    for (int x = -3; x <= 3; x++)  
-                    {
-                        Chunk chunk = ChunkGenerator.GenerateChunk(new Vector2(x, y));
-                        world.AddChunk(chunk);
-                    }
-                }
+                World world = new World("test world", worldDirectory);
+
                 using (FileStream writer = new FileStream(worldFile, FileMode.Open))
                 {
                     Serializer.Serialize<World>(writer, world);
                 }
 
-                return worldFile;
+
+                return worldDirectory;
             }
             catch (Exception e)
             {
@@ -54,18 +51,20 @@ namespace LitD.WorldModule
         }
 
         /// <summary> Загрузка существующего мира из файла. </summary>
-        public static void LoadWorld(string worldFile, out World world)
+        public static void LoadWorld(string worldDirectory, out World world)
         {
-            using (FileStream fileStream = new FileStream(worldFile, FileMode.Open))
+            using (FileStream fileStream = new FileStream(Path.Combine(worldDirectory, WorldConstants.WORLD_FILE_NAME), FileMode.Open))
             {
                 world = Serializer.Deserialize<World>(fileStream);
             }
 
-            foreach (Chunk chunk in world.GetChunks())
+            using (FileStream fileStream = new FileStream(Path.Combine(worldDirectory, WorldConstants.WORLD_CHUNK_FILE_NAME), FileMode.Open))
             {
-                foreach (TileEntity tile in chunk.GetTiles())
+                List<Chunk> chunks = Serializer.Deserialize<List<Chunk>>(fileStream);
+
+                foreach (Chunk chunk in chunks)
                 {
-                    tile.InitializeSprite();
+                    world.AddChunk(chunk);
                 }
             }
         }

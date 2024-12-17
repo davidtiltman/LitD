@@ -18,7 +18,7 @@ namespace LitD.WorldModule
         /// </param>
         public static Chunk GenerateChunk(Vector2 worldChunkPosition)
         {
-            Chunk chunk = new Chunk(new Vector2(0, 0));
+            Chunk chunk = new Chunk(worldChunkPosition);
             Entity entity;
 
          
@@ -50,12 +50,10 @@ namespace LitD.WorldModule
                     entity = new TileEntity(
                         texture,
                         new Vector2(
-                            j * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.X + 400,
-                            i * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.Y + 300
+                            j * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.X,
+                            i * WorldConstants.DEFAULT_TILE_SIZE + WorldConstants.CHUNK_SIZE_IN_PIXELS * worldChunkPosition.Y
                         )
                     );
-
-
 
                     chunk.SetTile(entity, new Vector2(j, i));
                 }
