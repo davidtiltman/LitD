@@ -11,5 +11,8 @@
 
         /// <summary> Длина стороны чанка в пикселях. Чанк квадратный. </summary>
         public const int CHUNK_SIZE_IN_PIXELS = (int)DEFAULT_TILE_SIZE * CHUNK_SIZE;
+
+        public const string WORLD_FILE_NAME = "data.dat";
+        public const string WORLD_CHUNK_FILE_NAME = "chunks.dat";
     }
 }

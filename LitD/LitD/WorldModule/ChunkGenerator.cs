@@ -18,7 +18,7 @@ namespace LitD.WorldModule
         /// </param>
         public static Chunk GenerateChunk(Vector2 worldChunkPosition)
         {
-            Chunk chunk = new Chunk(new Vector2(0, 0));
+            Chunk chunk = new Chunk(worldChunkPosition);
             Entity entity;
 
          

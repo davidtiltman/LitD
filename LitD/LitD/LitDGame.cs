@@ -76,7 +76,8 @@ namespace LitD
             if(!_world.IsChunkExists(_player.GetChunkPosition()))
             {
                 _world.AddChunk(
-                    ChunkGenerator.GenerateChunk(_player.GetChunkPosition())
+                    ChunkGenerator.GenerateChunk(_player.GetChunkPosition()),
+                    true
                 );
             }
             

@@ -18,7 +18,6 @@ namespace LitD.WorldModule
 
         [ProtoMember(2)]
         private string _selfDirectory;
-        private FileStream _chunkStream;
 
         public World(string name, string selfDirectory)
         {
@@ -31,25 +30,20 @@ namespace LitD.WorldModule
         private World()
         {}
 
-        ~World()
-        {
-            if (_chunkStream != null)
-            {
-                _chunkStream.Close();
-            }
-        }
-
-        public void InitializeStream()
-        {
-            _chunkStream = new FileStream(Path.Combine(_selfDirectory, "chunks.dat"), FileMode.Open);
-        }
-
         /// <summary> Добавляет в мир новый чанк. </summary>
         /// <param name="chunk"> Новый чанк. </param>
-        public void AddChunk(Chunk chunk)
+        public void AddChunk(Chunk chunk, bool isNew = false)
         {
             _loadedChunks.Add(chunk);
             chunk.InitializeEntitySprites();
+
+            if (isNew)
+            {
+                using (FileStream chunkFile = new FileStream(Path.Combine(_selfDirectory, WorldConstants.WORLD_CHUNK_FILE_NAME), FileMode.Append))
+                {
+                    Serializer.Serialize<Chunk>(chunkFile, chunk);
+                }
+            }
         }
 
         /// <summary> Возвращает список всех чанков мира. </summary>
@@ -61,10 +55,7 @@ namespace LitD.WorldModule
 
         public bool IsChunkExists(Vector2 chunkPosition)
         {
-            List<Chunk> allChunks = Serializer.Deserialize<List<Chunk>>(_chunkStream);
-            _chunkStream.Seek(0, 0); // ресет потока
-
-            foreach (Chunk chunk in allChunks)
+            foreach (Chunk chunk in _loadedChunks)
             {
                 if (chunk.Position == chunkPosition)
                 {
