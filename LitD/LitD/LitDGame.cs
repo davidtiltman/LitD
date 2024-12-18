@@ -59,8 +59,8 @@ namespace LitD
             TextureManager.LoadTextures();
 
             // загрузка созданного в Initialize мира
-            //WorldLoader.LoadWorld(_worldDirectory, out _world);
-            WorldLoader.LoadWorld("Saves\\12_17_2024 11_10_17 PM", out _world);
+            WorldLoader.LoadWorld(_worldDirectory, out _world);
+            //WorldLoader.LoadWorld("Saves\\12_17_2024 11_10_17 PM", out _world);
             _player.InitializeSprite();
             // =====================================
         }
@@ -74,15 +74,7 @@ namespace LitD
             _player.Update(gameTime);
             _camera.Update(_player.EntityPosition, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
 
-            if(!_world.IsChunkExists(_player.GetChunkPosition()))
-            {
-                _world.AddChunk(
-                    ChunkGenerator.GenerateChunk(_player.GetChunkPosition()),
-                    true
-                );
-            }
-            
-
+            _world.Update(gameTime, _player.GetChunkPosition());
             base.Update(gameTime);
         }
 
