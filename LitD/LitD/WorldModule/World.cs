@@ -3,13 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using ProtoBuf;
 using System.IO;
-using System.Diagnostics;
+using LitD.System.Interfaces;
 
 namespace LitD.WorldModule
 {
     /// <summary> Игровой мир, состоящий из чанков. </summary>
     [ProtoContract]
-    internal class World
+    internal class World : IDebugInfo
     {
         /// <summary> Название мира. </summary>
         [ProtoMember(1)]
@@ -132,5 +132,27 @@ namespace LitD.WorldModule
                 chunk.Draw(spriteBatch, gameTime);
             }
         }
+
+        #region IDebugInfo
+
+        public void GetDebugInfo(ref string debugInfo)
+        {
+            if (!string.IsNullOrEmpty(debugInfo))
+            {
+                debugInfo += "\n";
+            }
+
+            debugInfo += "World:\n";
+            if (_loadedChunks.Count > 0)
+            {
+                debugInfo += $"\tLoaded chunks:{GetLoadedChunks().Count}";
+            }
+            else
+            {
+                debugInfo += "No chunks loaded";
+            }
+        }
+
+        #endregion
     }
 }

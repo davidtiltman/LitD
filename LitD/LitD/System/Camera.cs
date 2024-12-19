@@ -10,7 +10,7 @@ namespace LitD.System
     {
         public Matrix Transform { get; private set; }
         public Vector2 Position { get; private set; }
-        public float Zoom { get; set; } = 0.5f;
+        public float Zoom { get; set; } = 1f;
 
         public Camera()
         {
