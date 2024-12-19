@@ -16,37 +16,73 @@ namespace LitD.WorldModule
         /// Позиция чанка в мире.<br/>
         /// Чанки имеют собственные координаты с шагом в единицу.
         /// </param>
+
+            public static int WorldSeed;
+
+            public static void Initialize()
+            {
+                 
+                Random rnd = new Random();
+                WorldSeed = rnd.Next(int.MinValue, int.MaxValue);
+            }
+
         public static Chunk GenerateChunk(Vector2 worldChunkPosition)
         {
             Chunk chunk = new Chunk(worldChunkPosition);
             Entity entity;
 
-         
             float noiseScale = 0.01f;
+            float baseHeight = 50f;
+            float heightVariation = 20f;
+
+            float seedOffsetX = WorldSeed * 10.0f;
+            float seedOffsetY = WorldSeed * 10.0f;
+
+            
+            float caveNoiseScale = 0.05f;
+            float caveThreshold = 0.7f; // Чем ближе к 1, тем реже пещеры
 
             for (int i = 0; i < WorldConstants.CHUNK_SIZE; i++)
             {
                 for (int j = 0; j < WorldConstants.CHUNK_SIZE; j++)
                 {
-
-                    /* эта хуйня нужна чтобы учитывать окружение, я знаю, что ты сказал, что это не должно быть внутри чанка но мне похуй, я не понял как это по другому сделать
-                     типо шум работает со всей картой и эти координаты нужны, чтобы учитывать что сгенерировалось в предыдущих чанках*/
-                    float globalX = j + worldChunkPosition.X * WorldConstants.CHUNK_SIZE; 
+                    float globalX = j + worldChunkPosition.X * WorldConstants.CHUNK_SIZE;
                     float globalY = i + worldChunkPosition.Y * WorldConstants.CHUNK_SIZE;
 
-                    /*это уровни шума, ну типо первый то, что чаще встречаеться, второй то что реже и т.д. Коэф у каждого уровня влияет на частоту(эти значения связаны
-                     с DetermineTexture*/
-                    float noiseValue = (
-                        0.9f * PerlinNoise.Generate(globalX * noiseScale, globalY * noiseScale) +
-                        0.6f * PerlinNoise.Generate(globalX * noiseScale * 2, globalY * noiseScale * 2) +
-                        0.3f * PerlinNoise.Generate(globalX * noiseScale * 4, globalY * noiseScale * 4)
-);                  //нормализация,пушто шум генерит от -1 до 1
-                    noiseValue = (noiseValue + 1) / 2f; 
+                    float noiseX = (globalX + seedOffsetX) * noiseScale;
+                    float noiseY = (0 + seedOffsetY) * noiseScale;
+                    float groundHeight = baseHeight + PerlinNoise.Generate(noiseX, noiseY) * heightVariation;
 
-                 
-                    string texture = DetermineTexture(noiseValue);
+                    string texture;
 
-                    // Создание тайла
+                    if (globalY > groundHeight + 1)
+                    {
+                     
+                        float caveNoiseX = (globalX + seedOffsetX) * caveNoiseScale;
+                        float caveNoiseY = (globalY + seedOffsetY) * caveNoiseScale;
+                        float caveValue = PerlinNoise.Generate(caveNoiseX, caveNoiseY);
+                        caveValue = (caveValue + 1f) / 2f;  
+
+                        if (caveValue > caveThreshold)
+                        {
+                             
+                            texture = "Air";
+                        }
+                        else
+                        {
+                             
+                            texture = "Dirt";
+                        }
+                    }
+                    else if (Math.Abs(globalY - groundHeight) <= 1)
+                    {
+                        texture = "Grass";
+                    }
+                    else
+                    {
+                        texture = "Air";
+                    }
+
                     entity = new TileEntity(
                         texture,
                         new Vector2(
@@ -58,21 +94,11 @@ namespace LitD.WorldModule
                     chunk.SetTile(entity, new Vector2(j, i));
                 }
             }
+
             return chunk;
         }
 
-        /// <summary>
-        /// Определяет текстуру на основе значения шума.
-        /// </summary>
-        private static string DetermineTexture(float noiseValue)
-        {
-            //ну ты понял
-            if (noiseValue < 0.5f)
-                return "w"; 
-            else if (noiseValue < 0.55f)
-                return "Grass"; 
-            else
-                return "Dirt";  
-        }
     }
+
+
 }
