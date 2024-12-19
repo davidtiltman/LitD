@@ -59,29 +59,21 @@ namespace LitD.WorldModule
             return _loadedChunks;
         }
 
-        public bool IsChunkExists(Vector2 chunkPosition)
+        private Chunk IsChunkExists(Vector2 chunkPosition)
         {
             foreach (Chunk chunk in _loadedChunks)
             {
                 if (chunk.Position == chunkPosition)
                 {
-                    return true;
+                    return chunk;
                 }
             }
-            return false;
-        }
-
-        public void Draw(SpriteBatch spriteBatch, GameTime gameTime, Vector2 observerPosition)
-        {
-            foreach (var chunk in GetVisibleChunks(observerPosition))
-            {
-                chunk.Draw(spriteBatch, gameTime);
-            }
+            return null;
         }
 
         /// <summary> Возвращает список видимых наблюдателем чанков. </summary>
         /// <param name="observerPosition"> Координаты наблюдателя. </param>
-        public List<Chunk> GetVisibleChunks(Vector2 observerPosition)
+        private List<Chunk> GetVisibleChunks(Vector2 observerPosition)
         {
             List<Chunk> visible = new List<Chunk>();
 
@@ -94,6 +86,51 @@ namespace LitD.WorldModule
             }
 
             return visible;
+        }
+
+        private List<Vector2> GetVisiblePositions(Vector2 observer)
+        {
+            List<Vector2> unfiltered = new List<Vector2>();
+
+            for (int i = (int)observer.X - WorldConstants.CHUNK_LOAD_DISTANCE; i <= observer.X + WorldConstants.CHUNK_LOAD_DISTANCE; i++)
+            {
+                for (int j = (int)observer.Y - WorldConstants.CHUNK_LOAD_DISTANCE; j <= observer.Y + WorldConstants.CHUNK_LOAD_DISTANCE; j++)
+                {
+                    unfiltered.Add(new Vector2(i, j));
+                }
+            }
+
+            List<Vector2> filtered = new List<Vector2>();
+            foreach (var positions in unfiltered)
+            {
+                if (Vector2.Distance(observer, positions) <= WorldConstants.CHUNK_LOAD_DISTANCE)
+                {
+                    filtered.Add(positions);
+                }
+            }
+
+            return filtered;
+        }
+
+        public void Update(GameTime gameTime, Vector2 observerPosition)
+        {
+            List<Vector2> visiblePositions = GetVisiblePositions(observerPosition);
+
+            foreach (var position in visiblePositions)
+            {
+                if (IsChunkExists(position) == null)
+                {
+                    AddChunk(ChunkGenerator.GenerateChunk(position), true);
+                }
+            }
+        }
+
+        public void Draw(SpriteBatch spriteBatch, GameTime gameTime, Vector2 observerPosition)
+        {
+            foreach (var chunk in GetVisibleChunks(observerPosition))
+            {
+                chunk.Draw(spriteBatch, gameTime);
+            }
         }
     }
 }
