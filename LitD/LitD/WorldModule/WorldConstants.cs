@@ -13,9 +13,9 @@
         public const int CHUNK_SIZE_IN_PIXELS = (int)DEFAULT_TILE_SIZE * CHUNK_SIZE;
 
         /// <summary> Дальность прорисовки чанков. </summary>
-        public const int CHUNK_DRAW_DISTANCE = 4;
+        public const int CHUNK_DRAW_DISTANCE = 8;
 
         /// <summary> Размер региона в чанках. </summary>
-        public const int REGION_SIZE = 4;
+        public const int REGION_SIZE = 16;
     }
 }

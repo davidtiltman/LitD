@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ProtoBuf;
-using System.Diagnostics;
 
 namespace LitD.WorldModule.Entities.Placeable
 {

@@ -71,7 +71,8 @@ namespace LitD.WorldModule.Entities.Alive.Player
 
             debugInfo += "Player:\n";
             debugInfo += $"\tPosition:\n\t\tX{EntityPosition.X}\n\t\tY{EntityPosition.Y}\n";
-            debugInfo += $"\tChunk:\n\t\tX{GetCurrentChunkPosition().X}\n\t\tY{GetCurrentChunkPosition().Y}";
+            debugInfo += $"\tRegion:\n\t\tX{GetCurrentRegionPosition().X}\n\t\tY{GetCurrentRegionPosition().Y}\n";
+            debugInfo += $"\tGlobal chunk:\n\t\tX{GetCurrentChunkPosition().X}\n\t\tY{GetCurrentChunkPosition().Y}";
         }
 
         #endregion

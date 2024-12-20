@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-
 namespace LitD.Core.Textures
 {
     /// <summary>

@@ -1,8 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework;
-using System;
-using LitD.System.SerializableTypes;
+﻿using Microsoft.Xna.Framework;
 
 namespace LitD.System
 {

@@ -5,7 +5,6 @@ using ProtoBuf;
 using System.IO;
 using LitD.System.Interfaces;
 using System;
-using System.Diagnostics;
 
 namespace LitD.WorldModule.WorldStructure
 {
@@ -119,19 +118,38 @@ namespace LitD.WorldModule.WorldStructure
                 (float)Math.Floor(observerPosition.Y / (WorldConstants.REGION_SIZE * WorldConstants.CHUNK_SIZE_IN_PIXELS))
             );
 
-            Region region = IsRegionExists(regionLocation);
-            if (region != null)
+            // проверяем квадрат 3x3 вокруг наблюдателя, чтобы подргузить соседние регионы
+            Vector2[] nearRegions = new Vector2[]
             {
-                // регион существует И не загружен, то добавляем его в список загруженных
-                if (!_loadedRegions.Contains(region))
+                new Vector2(regionLocation.X - regionLocation.Y - 1),
+                new Vector2(regionLocation.X, regionLocation.Y - 1),
+                new Vector2(regionLocation.X + 1, regionLocation.Y - 1),
+
+                new Vector2(regionLocation.X - 1, regionLocation.Y),
+                new Vector2(regionLocation.X, regionLocation.Y),
+                new Vector2(regionLocation.X + 1, regionLocation.Y),
+
+                new Vector2(regionLocation.X - 1, regionLocation.Y + 1),
+                new Vector2(regionLocation.X, regionLocation.Y + 1),
+                new Vector2(regionLocation.X + 1, regionLocation.Y + 1)
+            };
+
+            foreach (Vector2 nearRegion in nearRegions)
+            {
+                Region region = IsRegionExists(nearRegion);
+                if (region != null)
                 {
-                    AddRegion(region);
+                    // регион существует И не загружен, то добавляем его в список загруженных
+                    if (!_loadedRegions.Contains(region))
+                    {
+                        AddRegion(region);
+                    }
                 }
-            }
-            else
-            {
-                // регион НЕ существует
-                AddRegion(new Region(regionLocation));
+                else
+                {
+                    // регион НЕ существует
+                    AddRegion(new Region(nearRegion));
+                }
             }
 
             // обновляем видимые чанки
@@ -165,11 +183,20 @@ namespace LitD.WorldModule.WorldStructure
             debugInfo += "World:\n";
             if (_loadedRegions.Count > 0)
             {
-                debugInfo += $"\tLoaded regions:{_loadedRegions.Count} (Region contains {Math.Pow(WorldConstants.REGION_SIZE, 2)} chunks)";
+                debugInfo += $"\tLoaded regions:{_loadedRegions.Count} (A region contains {Math.Pow(WorldConstants.REGION_SIZE, 2)} chunks)\n";
             }
             else
             {
-                debugInfo += "No chunks loaded";
+                debugInfo += "\tNo chunks loaded\n";
+            }
+
+            if (_visibleChunks.Count > 0)
+            {
+                debugInfo += $"\tVisible chunks: {_visibleChunks.Count}";
+            }
+            else
+            {
+                debugInfo += "\tNo chunks visible";
             }
         }
 
