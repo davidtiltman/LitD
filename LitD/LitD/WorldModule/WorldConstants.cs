@@ -19,6 +19,6 @@
         public const string WORLD_CHUNK_FILE_NAME = "chunks.dat";
 
         /// <summary> Дальность прорисовки чанков. </summary>
-        public const int CHUNK_LOAD_DISTANCE = 5;
+        public const int CHUNK_LOAD_DISTANCE = 4;
     }
 }

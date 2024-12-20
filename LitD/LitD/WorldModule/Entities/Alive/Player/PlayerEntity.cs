@@ -3,10 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using LitD.System.Interfaces;
 
 namespace LitD.WorldModule.Entities.Alive.Player
 {
-    internal class PlayerEntity : Entity
+    internal class PlayerEntity : Entity, IDebugInfo
     {
         public float MoveSpeed { get; set; } = 250f;
 
@@ -21,6 +22,11 @@ namespace LitD.WorldModule.Entities.Alive.Player
                 (float)Math.Floor(EntityPosition.X / WorldConstants.CHUNK_SIZE_IN_PIXELS),
                 (float)Math.Floor(EntityPosition.Y / WorldConstants.CHUNK_SIZE_IN_PIXELS)            
             );
+        }
+
+        public Vector2 GetPositionInPixels()
+        {
+            return EntityPosition;
         }
 
         #region обновление и отрисовка
@@ -43,6 +49,24 @@ namespace LitD.WorldModule.Entities.Alive.Player
         {
             spriteBatch.Draw(EntitySprite, EntityPosition, Color.White);
         }
+
         #endregion
+
+        #region IDebugInfo
+
+        public void GetDebugInfo(ref string debugInfo)
+        {
+            if (!string.IsNullOrEmpty(debugInfo))
+            {
+                debugInfo += "\n";
+            }
+
+            debugInfo += "Player:\n";
+            debugInfo += $"\tPosition:\n\t\tX{EntityPosition.X}\n\t\tY{EntityPosition.Y}\n";
+            debugInfo += $"\tChunk:\n\t\tX{GetChunkPosition().X}\n\t\tY{GetChunkPosition().Y}";
+        }
+
+        #endregion
+
     }
 }
