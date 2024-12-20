@@ -5,7 +5,7 @@ using System;
 using ProtoBuf;
 using LitD.System.SerializableTypes;
 
-namespace LitD.WorldModule
+namespace LitD.WorldModule.WorldStructure
 {
     /// <summary> Сектор в мире, содержащий фиксированное количество тайлов. </summary>
     [ProtoContract]
@@ -25,7 +25,7 @@ namespace LitD.WorldModule
 
         /// <summary> Пустой конструктор нужен для десериализации. </summary>
         private Chunk()
-        {}
+        { }
 
         /// <summary>
         /// Переписывает тайл чанка.
@@ -54,7 +54,7 @@ namespace LitD.WorldModule
 
         public void InitializeEntitySprites()
         {
-            foreach(var entity in GetTiles())
+            foreach (var entity in GetTiles())
             {
                 entity.InitializeSprite();
             }

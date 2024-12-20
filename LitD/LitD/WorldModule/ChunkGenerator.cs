@@ -1,5 +1,6 @@
 ﻿using LitD.WorldModule.Entities;
 using LitD.WorldModule.Entities.Placeable;
+using LitD.WorldModule.WorldStructure;
 using Microsoft.Xna.Framework;
 using System;
 

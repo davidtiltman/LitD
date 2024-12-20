@@ -1,8 +1,10 @@
 ﻿using LitD.Core.Textures;
 using LitD.System;
+using LitD.System.Constants;
 using LitD.System.SerializableTypes;
 using LitD.WorldModule;
 using LitD.WorldModule.Entities.Alive.Player;
+using LitD.WorldModule.WorldStructure;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -41,7 +43,7 @@ namespace LitD
             // TODO: Add your initialization logic here
 
             #region проверка/создание директорий
-            Directory.CreateDirectory("Saves");
+            Directory.CreateDirectory(FolderNameConstants.GameSaveFolderName);
             #endregion
 
             TextureManager.Init(Content, GraphicsDevice);
@@ -77,7 +79,7 @@ namespace LitD
             _player.Update(gameTime);
             _camera.Update(_player.EntityPosition, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
 
-            _world.Update(gameTime, _player.GetChunkPosition());
+            _world.Update(gameTime, _player.GetPositionInPixels());
 
             _debugInfo = string.Empty;
             _world.GetDebugInfo(ref _debugInfo);
@@ -91,7 +93,7 @@ namespace LitD
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin(transformMatrix: _camera.Transform);
-            _world.Draw(_spriteBatch, gameTime, _player.GetChunkPosition());
+            _world.Draw(_spriteBatch, gameTime, _player.GetCurrentRegionPosition());
             _player.Draw(_spriteBatch, gameTime);
             _spriteBatch.End();
 
