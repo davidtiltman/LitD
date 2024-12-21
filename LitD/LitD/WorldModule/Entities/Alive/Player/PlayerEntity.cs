@@ -45,7 +45,7 @@ namespace LitD.WorldModule.Entities.Alive.Player
             float acceleration = 1f;
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (key.IsKeyDown(Keys.LeftShift)) acceleration = 2f;
+            if (key.IsKeyDown(Keys.LeftShift)) acceleration = 4f;
 
             if (key.IsKeyDown(Keys.W)) EntityPosition.Y -= MoveSpeed * acceleration * deltaTime;
             if (key.IsKeyDown(Keys.S)) EntityPosition.Y += MoveSpeed * acceleration * deltaTime;

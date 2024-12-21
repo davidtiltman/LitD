@@ -5,6 +5,7 @@ using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace LitD.WorldModule.WorldStructure
 {
@@ -18,7 +19,7 @@ namespace LitD.WorldModule.WorldStructure
 
         /// <summary> Чанки региона. </summary>
         [ProtoMember(2)]
-        private Chunk[] _regionChunks = new Chunk[(int)Math.Pow(WorldConstants.REGION_SIZE, 2)];
+        private List<Chunk> _regionChunks = new List<Chunk>();
 
         #region Initialize
 
@@ -28,16 +29,20 @@ namespace LitD.WorldModule.WorldStructure
         {
             Position = position;
 
+            Chunk[] temp = new Chunk[(int)Math.Pow(WorldConstants.REGION_SIZE, 2)];
+
             for (int y = 0; y < WorldConstants.REGION_SIZE; y++)
             {
                 for (int x = 0; x < WorldConstants.REGION_SIZE; x++)
                 {
-                    _regionChunks[y * WorldConstants.REGION_SIZE + x] = ChunkGenerator.GenerateChunk(new Vector2(
+                    temp[y * WorldConstants.REGION_SIZE + x] = ChunkGenerator.GenerateChunk(new Vector2(
                         Position.X * WorldConstants.REGION_SIZE +  x,
                         Position.Y * WorldConstants.REGION_SIZE + y
                     ));
                 }
             }
+
+            _regionChunks = temp.ToList();
         }
 
         private Region()
@@ -83,7 +88,12 @@ namespace LitD.WorldModule.WorldStructure
 
             using (FileStream file = new FileStream(filePath, FileMode.Open))
             {
-                Serializer.Serialize(file, this);
+                Serializer.Serialize<Region>(file, this);
+            }
+
+            using (FileStream file = new FileStream(filePath, FileMode.Open))
+            {
+                Region test = Serializer.Deserialize<Region>(file);
             }
         }
 
@@ -108,6 +118,13 @@ namespace LitD.WorldModule.WorldStructure
             {
                 chunk.InitializeEntitySprites();
             }
+        }
+
+        /// <summary> Проверяет виден ли регион какому-либо наблюдателю. </summary>
+        /// <returns> False, если в регионе нет видимых чанков. True, если есть. </returns>
+        public bool IsVisible()
+        {
+            return GetChunks().Any(c => c.IsVisible);
         }
     }
 }

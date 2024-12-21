@@ -17,5 +17,8 @@
 
         /// <summary> Размер региона в чанках. </summary>
         public const int REGION_SIZE = 16;
+
+        /// <summary> Частота выгрузки регионов в секундах. </summary>
+        public const int REGION_UNLOAD_FREQUENCY = 8;
     }
 }

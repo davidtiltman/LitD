@@ -17,6 +17,9 @@ namespace LitD.WorldModule.WorldStructure
         [ProtoMember(2)]
         private Entity[] _contentTiles;
 
+        /// <summary> Виден ли чанк наблюдателю. </summary>
+        public bool IsVisible { get; private set; }
+
         public Chunk(Vector2 chunkPosition)
         {
             Position = chunkPosition;
@@ -58,6 +61,13 @@ namespace LitD.WorldModule.WorldStructure
             {
                 entity.InitializeSprite();
             }
+        }
+
+        /// <summary> Устанавливает видимость чанка. </summary>
+        /// <param name="visible"> true = видимый, false = невидимый. </param>
+        public void SetVisibility(bool visible)
+        {
+            IsVisible = visible;
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)

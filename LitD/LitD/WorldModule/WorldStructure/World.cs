@@ -5,6 +5,7 @@ using ProtoBuf;
 using System.IO;
 using LitD.System.Interfaces;
 using System;
+using System.Linq;
 
 namespace LitD.WorldModule.WorldStructure
 {
@@ -53,7 +54,7 @@ namespace LitD.WorldModule.WorldStructure
                 Region region = null;
                 using (FileStream file = new FileStream(Region.GetRegionFilePath(_selfDirectory, position), FileMode.Open))
                 {
-                    region = Serializer.Deserialize(file, region);
+                    region = Serializer.Deserialize<Region>(file, region);
                 }
                 return region;
             }
@@ -75,22 +76,31 @@ namespace LitD.WorldModule.WorldStructure
         /// <summary> Выделение видимых чанков из всех загруженных. </summary>
         public List<Chunk> FilterVisibleChunks(Vector2 observerPosition)
         {
-            List<Chunk> allChunks = new List<Chunk>();
+            _visibleChunks.Clear();
+            List<Chunk> visibleChunks = new List<Chunk>();
+
             foreach (Region region in _loadedRegions)
             {
                 foreach (Chunk chunk in region.GetChunks())
                 {
-                    allChunks.Add(chunk);
+                    if (Vector2.Distance(chunk.Position, observerPosition) <= WorldConstants.CHUNK_DRAW_DISTANCE)
+                    {
+                        chunk.SetVisibility(true);
+                        visibleChunks.Add(chunk);
+                    }
+                    else
+                    {
+                        chunk.SetVisibility(false);
+                    }
                 }
             }
 
-            _visibleChunks.Clear();
-            List<Chunk> visibleChunks = new List<Chunk>();
-            foreach(Chunk chunk in allChunks)
+            List<Chunk> t = new List<Chunk>();
+            foreach (Region region in _loadedRegions)
             {
-                if (Vector2.Distance(chunk.Position, observerPosition) <= WorldConstants.CHUNK_DRAW_DISTANCE)
+                foreach (Chunk chunk in region.GetChunks())
                 {
-                    visibleChunks.Add(chunk);
+                    t.Add(chunk);
                 }
             }
 
@@ -104,12 +114,9 @@ namespace LitD.WorldModule.WorldStructure
 
         #region Update/Draw
 
-        /// <summary>
-        /// Обновляет состояние мира.
-        /// </summary>
-        /// <param name="gameTime"> Игровое время. </param>
-        /// <param name="observerRegionPosition"> Координаты наблюдателя. </param>
-        public void Update(GameTime gameTime, Vector2 observerPosition)
+        /// <summary> Выделенная логика обновления видимых чанков. </summary>
+        /// <param name="observerPosition"></param>
+        private void UpdateVisibleChunks(Vector2 observerPosition)
         {
             // проверяем, есть ли на координатах наблюдателя регион
             // конвертируем координаты наблюдателя в координаты региона
@@ -118,37 +125,26 @@ namespace LitD.WorldModule.WorldStructure
                 (float)Math.Floor(observerPosition.Y / (WorldConstants.REGION_SIZE * WorldConstants.CHUNK_SIZE_IN_PIXELS))
             );
 
-            // проверяем квадрат 3x3 вокруг наблюдателя, чтобы подргузить соседние регионы
-            Vector2[] nearRegions = new Vector2[]
+            for (int i = (int)regionLocation.X - 1; i < regionLocation.X + 1; i++)
             {
-                new Vector2(regionLocation.X - regionLocation.Y - 1),
-                new Vector2(regionLocation.X, regionLocation.Y - 1),
-                new Vector2(regionLocation.X + 1, regionLocation.Y - 1),
-
-                new Vector2(regionLocation.X - 1, regionLocation.Y),
-                new Vector2(regionLocation.X, regionLocation.Y),
-                new Vector2(regionLocation.X + 1, regionLocation.Y),
-
-                new Vector2(regionLocation.X - 1, regionLocation.Y + 1),
-                new Vector2(regionLocation.X, regionLocation.Y + 1),
-                new Vector2(regionLocation.X + 1, regionLocation.Y + 1)
-            };
-
-            foreach (Vector2 nearRegion in nearRegions)
-            {
-                Region region = IsRegionExists(nearRegion);
-                if (region != null)
+                for (int j = (int)regionLocation.Y - 1; j < regionLocation.Y + 1; j++)
                 {
-                    // регион существует И не загружен, то добавляем его в список загруженных
-                    if (!_loadedRegions.Contains(region))
+                    Vector2 nearPositions = new Vector2(i, j);
+
+                    Region region = IsRegionExists(nearPositions);
+                    if (region != null)
                     {
-                        AddRegion(region);
+                        // регион существует И не загружен, то добавляем его в список загруженных
+                        if (!_loadedRegions.Contains(region))
+                        {
+                            AddRegion(region);
+                        }
                     }
-                }
-                else
-                {
-                    // регион НЕ существует
-                    AddRegion(new Region(nearRegion));
+                    else
+                    {
+                        // регион НЕ существует
+                        AddRegion(new Region(nearPositions));
+                    }
                 }
             }
 
@@ -159,6 +155,35 @@ namespace LitD.WorldModule.WorldStructure
                 (float)Math.Floor(observerPosition.Y / WorldConstants.CHUNK_SIZE_IN_PIXELS)
             );
             _visibleChunks = FilterVisibleChunks(chunkLocation);
+        }
+
+        /// <summary> Выделенная логика отгрузки лишних регионов из памяти. </summary>
+        private void UnloadRegions()
+        {
+            for (int i = 0; i < _loadedRegions.Count; i++)
+            {
+                if (!_loadedRegions[i].IsVisible())
+                {
+                    // если в регионе нет видимых чанков, то регион сохраняется на диск и выгружается из памяти.
+                    _loadedRegions[i].SaveRegion(_selfDirectory);
+                    _loadedRegions.RemoveAt(i);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Обновляет состояние мира.
+        /// </summary>
+        /// <param name="gameTime"> Игровое время. </param>
+        /// <param name="observerRegionPosition"> Координаты наблюдателя. </param>
+        public void Update(GameTime gameTime, Vector2 observerPosition)
+        {
+            UpdateVisibleChunks(observerPosition);
+
+            if ((int)(gameTime.TotalGameTime.TotalSeconds) % WorldConstants.REGION_UNLOAD_FREQUENCY == 0)
+            {
+                UnloadRegions();
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime, Vector2 observerPosition)
