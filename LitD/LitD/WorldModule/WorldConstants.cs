@@ -1,4 +1,6 @@
-﻿namespace LitD.WorldModule
+﻿using System;
+
+namespace LitD.WorldModule
 {
     /// <summary> Константы для генерации и обработки мира. </summary>
     internal class WorldConstants
@@ -15,10 +17,19 @@
         /// <summary> Дальность прорисовки чанков. </summary>
         public const int CHUNK_DRAW_DISTANCE = 8;
 
-        /// <summary> Размер региона в чанках. </summary>
-        public const int REGION_SIZE = 16;
-
         /// <summary> Частота выгрузки регионов в секундах. </summary>
         public const int REGION_UNLOAD_FREQUENCY = 8;
+
+        /// <summary> Ширина региона в чанках. </summary>
+        public const int REGION_WIDTH = 4;
+
+        /// <summary> Верхняя граница мира. </summary>
+        public const int WORLD_HIGHEST_CHUNK = 32;
+
+        /// <summary> Нижняя граница мира. </summary>
+        public const int WORLD_LOWEST_CHUNK = -64;
+
+        /// <summary> Дальность прогрузки соседних от наблюдателя регионов регионов. </summary>
+        public const int NEAR_REGIONS_LOAD_DISTANCE = 3;
     }
 }

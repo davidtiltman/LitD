@@ -27,8 +27,8 @@ namespace LitD.WorldModule.Entities.Alive.Player
         public Vector2 GetCurrentRegionPosition()
         {
             return new Vector2(
-                (float)Math.Floor(EntityPosition.X / (WorldConstants.REGION_SIZE * WorldConstants.CHUNK_SIZE_IN_PIXELS)),
-                (float)Math.Floor(EntityPosition.Y / (WorldConstants.REGION_SIZE * WorldConstants.CHUNK_SIZE_IN_PIXELS))
+                (float)Math.Floor(EntityPosition.X / (WorldConstants.REGION_WIDTH * WorldConstants.CHUNK_SIZE_IN_PIXELS)),
+                (float)Math.Floor(EntityPosition.Y / (WorldConstants.REGION_WIDTH * WorldConstants.CHUNK_SIZE_IN_PIXELS))
             );
         }
 

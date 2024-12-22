@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace LitD.WorldModule.WorldStructure
 {
@@ -14,31 +15,35 @@ namespace LitD.WorldModule.WorldStructure
     [ProtoContract]
     internal class Region
     {
-        /// <summary> Координаты региона относительно друг друга. </summary>
+        /// <summary> Координаты региона по X. Измеряется в регионах: смещение в 1 регион = X + 1. </summary>
         [ProtoMember(1)]
-        public SerializableVector2 Position { get; private set; }
+        public int Position { get; private set; }
 
         /// <summary> Чанки региона. </summary>
         [ProtoMember(2)]
         private List<Chunk> _regionChunks = new List<Chunk>();
 
+        // это пока будет здесь, потому что константу нельзя объявить с использованием Math.Abs
+        private static int _regionHeightInChunks = Math.Abs(WorldConstants.WORLD_HIGHEST_CHUNK) + Math.Abs(WorldConstants.WORLD_LOWEST_CHUNK);
+        private static int _regionSizeInChunks = WorldConstants.REGION_WIDTH * _regionHeightInChunks;
+
         #region Initialize
 
         /// <summary> Конструктор, создающий новый регион на координатах. </summary>
         /// <param name="position"> Координаты нового региона. </param>
-        public Region(Vector2 position)
+        public Region(int xPosition)
         {
-            Position = position;
+            Position = xPosition;
 
-            Chunk[] temp = new Chunk[(int)Math.Pow(WorldConstants.REGION_SIZE, 2)];
+            Chunk[] temp = new Chunk[_regionSizeInChunks];
 
-            for (int y = 0; y < WorldConstants.REGION_SIZE; y++)
+            for (int y = WorldConstants.WORLD_LOWEST_CHUNK, index = 0; y < WorldConstants.WORLD_HIGHEST_CHUNK; y++)
             {
-                for (int x = 0; x < WorldConstants.REGION_SIZE; x++)
+                for (int x = 0; x < WorldConstants.REGION_WIDTH; x++, index++)
                 {
-                    temp[y * WorldConstants.REGION_SIZE + x] = ChunkGenerator.GenerateChunk(new Vector2(
-                        Position.X * WorldConstants.REGION_SIZE +  x,
-                        Position.Y * WorldConstants.REGION_SIZE + y
+                    temp[index] = ChunkGenerator.GenerateChunk(new Vector2(
+                        Position * WorldConstants.REGION_WIDTH + x,
+                        y
                     ));
                 }
             }
@@ -73,7 +78,7 @@ namespace LitD.WorldModule.WorldStructure
         {
             try
             {
-                _regionChunks[(int)position.Y * WorldConstants.REGION_SIZE + (int)position.X] = chunk;
+                _regionChunks[(int)position.Y * _regionHeightInChunks + (int)position.X] = chunk;
             }
             catch
             {
@@ -91,23 +96,18 @@ namespace LitD.WorldModule.WorldStructure
             {
                 Serializer.Serialize<Region>(file, this);
             }
-
-            using (FileStream file = new FileStream(filePath, FileMode.Open))
-            {
-                Region test = Serializer.Deserialize<Region>(file);
-            }
         }
 
         /// <summary> Преобразует координаты региона в путь к файлу региона. </summary>
         /// <param name="position"> Координаты региона. </param>
         /// <returns> Путь к файлу. </returns>
-        public static string GetRegionFilePath(string worldDirectory, Vector2 position)
+        public static string GetRegionFilePath(string worldDirectory, int xPosition)
         {
             string path = string.Empty;
 
             path += $"{worldDirectory}/";
             path += $"{FolderNameConstants.WorldRegionFolderName}/";
-            path += $"{position.X}_{position.Y}.{FileNameConstants.REGION_FILE_EXTENSION}";
+            path += $"{xPosition}.{FileNameConstants.REGION_FILE_EXTENSION}";
 
             return path;
         }

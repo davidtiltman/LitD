@@ -40,19 +40,19 @@ namespace LitD.WorldModule.WorldStructure
         /// Проверяет, существует ли регион на указанных коориданах. </summary>
         /// <param name="position"> Кооридинаты региона. </param>
         /// <returns> Регион, если он существует. Null, если нет. </returns>
-        private Region IsRegionExists(Vector2 position)
+        private Region IsRegionExists(int xPosition)
         {
             // сначала ищем в памяти
             foreach(Region region in _loadedRegions)
             {
-                if (region.Position == position) return region;
+                if (region.Position == xPosition) return region;
             }
 
             // потом на диске
             try
             {
                 Region region = null;
-                using (FileStream file = new FileStream(Region.GetRegionFilePath(_selfDirectory, position), FileMode.Open))
+                using (FileStream file = new FileStream(Region.GetRegionFilePath(_selfDirectory, xPosition), FileMode.Open))
                 {
                     region = Serializer.Deserialize<Region>(file, region);
                 }
@@ -73,40 +73,8 @@ namespace LitD.WorldModule.WorldStructure
             region.SaveRegion(_selfDirectory);
         }
 
-        /// <summary> Выделение видимых чанков из всех загруженных. </summary>
-        public List<Chunk> FilterVisibleChunks(Vector2 observerPosition)
-        {
-            _visibleChunks.Clear();
-            List<Chunk> visibleChunks = new List<Chunk>();
-
-            foreach (Region region in _loadedRegions)
-            {
-                foreach (Chunk chunk in region.GetChunks())
-                {
-                    if (Vector2.Distance(chunk.Position, observerPosition) <= WorldConstants.CHUNK_DRAW_DISTANCE)
-                    {
-                        chunk.SetVisibility(true);
-                        visibleChunks.Add(chunk);
-                    }
-                    else
-                    {
-                        chunk.SetVisibility(false);
-                    }
-                }
-            }
-
-            List<Chunk> t = new List<Chunk>();
-            foreach (Region region in _loadedRegions)
-            {
-                foreach (Chunk chunk in region.GetChunks())
-                {
-                    t.Add(chunk);
-                }
-            }
-
-            return visibleChunks;
-        }
-
+        /// <summary> Возвращает видимые чанки. </summary>
+        /// <returns> Список видимых чанков. </returns>
         public List<Chunk> GetVisibleChunks()
         {
             return _visibleChunks;
@@ -118,43 +86,30 @@ namespace LitD.WorldModule.WorldStructure
         /// <param name="observerPosition"></param>
         private void UpdateVisibleChunks(Vector2 observerPosition)
         {
-            // проверяем, есть ли на координатах наблюдателя регион
-            // конвертируем координаты наблюдателя в координаты региона
-            Vector2 regionLocation = new Vector2(
-                (float)Math.Floor(observerPosition.X / (WorldConstants.REGION_SIZE * WorldConstants.CHUNK_SIZE_IN_PIXELS)),
-                (float)Math.Floor(observerPosition.Y / (WorldConstants.REGION_SIZE * WorldConstants.CHUNK_SIZE_IN_PIXELS))
-            );
-
-            for (int i = (int)regionLocation.X - 1; i < regionLocation.X + 1; i++)
-            {
-                for (int j = (int)regionLocation.Y - 1; j < regionLocation.Y + 1; j++)
-                {
-                    Vector2 nearPositions = new Vector2(i, j);
-
-                    Region region = IsRegionExists(nearPositions);
-                    if (region != null)
-                    {
-                        // регион существует И не загружен, то добавляем его в список загруженных
-                        if (!_loadedRegions.Contains(region))
-                        {
-                            AddRegion(region);
-                        }
-                    }
-                    else
-                    {
-                        // регион НЕ существует
-                        AddRegion(new Region(nearPositions));
-                    }
-                }
-            }
-
-            // обновляем видимые чанки
             // конвертируем координаты наблюдателя в координаты чкнка
-            var chunkLocation = new Vector2(
+            var observerChunkLocation = new Vector2(
                 (float)Math.Floor(observerPosition.X / WorldConstants.CHUNK_SIZE_IN_PIXELS),
                 (float)Math.Floor(observerPosition.Y / WorldConstants.CHUNK_SIZE_IN_PIXELS)
             );
-            _visibleChunks = FilterVisibleChunks(chunkLocation);
+
+            // убираем все ранее записанные чанки
+            _visibleChunks.Clear();
+
+            foreach (Region region in _loadedRegions)
+            {
+                foreach (Chunk chunk in region.GetChunks())
+                {
+                    if (Vector2.Distance(chunk.Position, observerChunkLocation) <= WorldConstants.CHUNK_DRAW_DISTANCE)
+                    {
+                        chunk.SetVisibility(true);
+                        _visibleChunks.Add(chunk);
+                    }
+                    else
+                    {
+                        chunk.SetVisibility(false);
+                    }
+                }
+            }
         }
 
         /// <summary> Выделенная логика отгрузки лишних регионов из памяти. </summary>
@@ -165,8 +120,40 @@ namespace LitD.WorldModule.WorldStructure
                 if (!_loadedRegions[i].IsVisible())
                 {
                     // если в регионе нет видимых чанков, то регион сохраняется на диск и выгружается из памяти.
-                    _loadedRegions[i].SaveRegion(_selfDirectory);
+                    //_loadedRegions[i].SaveRegion(_selfDirectory); // пока регионы чанки (следовательно регионы) нельзя никак изменять, поэтому нет нужды их сохранять
                     _loadedRegions.RemoveAt(i);
+                }
+            }
+        }
+
+        /// <summary> Выделенная логика подгрузки регионов. </summary>
+        /// <param name="observerPosition"></param>
+        private void LoadRegions(Vector2 observerPosition)
+        {
+            // проверяем, есть ли на координатах наблюдателя регион
+            // конвертируем координаты наблюдателя в координаты региона
+            int observerRegionLocation = (int)observerPosition.X / (WorldConstants.REGION_WIDTH * WorldConstants.CHUNK_SIZE_IN_PIXELS);
+
+            // подгружаем соседние от наблюдателя регионы
+            for (
+                    int regionLocation = observerRegionLocation - WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
+                    regionLocation < observerRegionLocation + WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
+                    regionLocation++
+                )
+            {
+                Region region = IsRegionExists(regionLocation);
+                if (region != null)
+                {
+                    // регион существует И не загружен, то добавляем его в список загруженных
+                    if (!_loadedRegions.Contains(region))
+                    {
+                        AddRegion(region);
+                    }
+                }
+                else
+                {
+                    // регион НЕ существует
+                    AddRegion(new Region(regionLocation));
                 }
             }
         }
@@ -178,6 +165,7 @@ namespace LitD.WorldModule.WorldStructure
         /// <param name="observerRegionPosition"> Координаты наблюдателя. </param>
         public void Update(GameTime gameTime, Vector2 observerPosition)
         {
+            LoadRegions(observerPosition);
             UpdateVisibleChunks(observerPosition);
 
             if ((int)(gameTime.TotalGameTime.TotalSeconds) % WorldConstants.REGION_UNLOAD_FREQUENCY == 0)
@@ -208,7 +196,8 @@ namespace LitD.WorldModule.WorldStructure
             debugInfo += "World:\n";
             if (_loadedRegions.Count > 0)
             {
-                debugInfo += $"\tLoaded regions:{_loadedRegions.Count} (A region contains {Math.Pow(WorldConstants.REGION_SIZE, 2)} chunks)\n";
+                int regionHeight = Math.Abs(WorldConstants.WORLD_LOWEST_CHUNK) + Math.Abs(WorldConstants.WORLD_HIGHEST_CHUNK); 
+                debugInfo += $"\tLoaded regions:{_loadedRegions.Count} (A region contains {WorldConstants.REGION_WIDTH * regionHeight} chunks)\n";
             }
             else
             {
