@@ -1,6 +1,6 @@
 ﻿namespace LitD.WorldModule
 {
-    /// <summary> Хранилище для общих констант. </summary>
+    /// <summary> Константы для генерации и обработки мира. </summary>
     internal class WorldConstants
     {
         /// <summary> Размер обычного тайла в пикселях. </summary>
@@ -12,13 +12,13 @@
         /// <summary> Длина стороны чанка в пикселях. Чанк квадратный. </summary>
         public const int CHUNK_SIZE_IN_PIXELS = (int)DEFAULT_TILE_SIZE * CHUNK_SIZE;
 
-        /// <summary> Название файла с метаданными мира. </summary>
-        public const string WORLD_FILE_NAME = "data.dat";
-
-        /// <summary> Название файла с чанками мира. </summary>
-        public const string WORLD_CHUNK_FILE_NAME = "chunks.dat";
-
         /// <summary> Дальность прорисовки чанков. </summary>
-        public const int CHUNK_LOAD_DISTANCE = 5;
+        public const int CHUNK_DRAW_DISTANCE = 8;
+
+        /// <summary> Размер региона в чанках. </summary>
+        public const int REGION_SIZE = 16;
+
+        /// <summary> Частота выгрузки регионов в секундах. </summary>
+        public const int REGION_UNLOAD_FREQUENCY = 8;
     }
 }

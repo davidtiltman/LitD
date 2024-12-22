@@ -5,7 +5,7 @@ using System;
 using ProtoBuf;
 using LitD.System.SerializableTypes;
 
-namespace LitD.WorldModule
+namespace LitD.WorldModule.WorldStructure
 {
     /// <summary> Сектор в мире, содержащий фиксированное количество тайлов. </summary>
     [ProtoContract]
@@ -17,6 +17,9 @@ namespace LitD.WorldModule
         [ProtoMember(2)]
         private Entity[] _contentTiles;
 
+        /// <summary> Виден ли чанк наблюдателю. </summary>
+        public bool IsVisible { get; private set; }
+
         public Chunk(Vector2 chunkPosition)
         {
             Position = chunkPosition;
@@ -25,7 +28,7 @@ namespace LitD.WorldModule
 
         /// <summary> Пустой конструктор нужен для десериализации. </summary>
         private Chunk()
-        {}
+        { }
 
         /// <summary>
         /// Переписывает тайл чанка.
@@ -54,10 +57,17 @@ namespace LitD.WorldModule
 
         public void InitializeEntitySprites()
         {
-            foreach(var entity in GetTiles())
+            foreach (var entity in GetTiles())
             {
                 entity.InitializeSprite();
             }
+        }
+
+        /// <summary> Устанавливает видимость чанка. </summary>
+        /// <param name="visible"> true = видимый, false = невидимый. </param>
+        public void SetVisibility(bool visible)
+        {
+            IsVisible = visible;
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)

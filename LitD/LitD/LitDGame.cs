@@ -1,13 +1,14 @@
 ﻿using LitD.Core.Textures;
 using LitD.System;
+using LitD.System.Constants;
 using LitD.System.SerializableTypes;
 using LitD.WorldModule;
 using LitD.WorldModule.Entities.Alive.Player;
+using LitD.WorldModule.WorldStructure;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace LitD
@@ -21,6 +22,8 @@ namespace LitD
         private World _world;
         private PlayerEntity _player;
         private Camera _camera;
+        private SpriteFont _debugFont;
+        private string _debugInfo;
 
         public LitDGame()
         {
@@ -39,7 +42,7 @@ namespace LitD
             // TODO: Add your initialization logic here
 
             #region проверка/создание директорий
-            Directory.CreateDirectory("Saves");
+            Directory.CreateDirectory(FolderNameConstants.GameSaveFolderName);
             #endregion
 
             TextureManager.Init(Content, GraphicsDevice);
@@ -60,9 +63,10 @@ namespace LitD
 
             // загрузка созданного в Initialize мира
             WorldLoader.LoadWorld(_worldDirectory, out _world);
-            //WorldLoader.LoadWorld("Saves\\12_17_2024 11_10_17 PM", out _world);
             _player.InitializeSprite();
             // =====================================
+
+            _debugFont = Content.Load<SpriteFont>("Fonts/DebugFont");
         }
 
         protected override void Update(GameTime gameTime)
@@ -74,7 +78,12 @@ namespace LitD
             _player.Update(gameTime);
             _camera.Update(_player.EntityPosition, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
 
-            _world.Update(gameTime, _player.GetChunkPosition());
+            _world.Update(gameTime, _player.GetPositionInPixels());
+
+            _debugInfo = string.Empty;
+            _world.GetDebugInfo(ref _debugInfo);
+            _player.GetDebugInfo(ref _debugInfo);
+
             base.Update(gameTime);
         }
 
@@ -83,17 +92,22 @@ namespace LitD
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin(transformMatrix: _camera.Transform);
-            _world.Draw(_spriteBatch, gameTime, _player.GetChunkPosition());
+            _world.Draw(_spriteBatch, gameTime, _player.GetCurrentRegionPosition());
             _player.Draw(_spriteBatch, gameTime);
             _spriteBatch.End();
 
-            // TODO: Add your drawing code here
+            // debug
+            _spriteBatch.Begin();
+            DrawDebugInfo();
+            _spriteBatch.End();
+            // =====
+
             base.Draw(gameTime);
         }
 
         #endregion
 
-        #region ивенты
+        #region служнебное
 
         private void OnResize(object sender, EventArgs e)
         {
@@ -101,6 +115,20 @@ namespace LitD
             _graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
         }
 
+        /// <summary> Приводит _debugInfo к выводимому виду. </summary>
+        private void DrawDebugInfo()
+        {
+            string[] lines = _debugInfo.Split(new[] { '\n' }, StringSplitOptions.None);
+            Vector2 debugLinePosition = new Vector2(8, 8);
+
+            foreach (string line in lines)
+            {
+                string formattedLine = line.Replace("\t", "  ");
+
+                _spriteBatch.DrawString(_debugFont, formattedLine, debugLinePosition, Color.White);
+                debugLinePosition.Y += _debugFont.LineSpacing;
+            }
+        }
         #endregion
     }
 }
