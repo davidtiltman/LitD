@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace LitD.WorldModule
+namespace LitD.WorldModule.WorldGeneration
 {
     public static class PerlinNoise
     {
-        
+
         public static float Generate(float x, float y)
         {
             int X = (int)MathF.Floor(x) & 255;
@@ -14,8 +14,8 @@ namespace LitD.WorldModule
             float u = Fade(x);
             float v = Fade(y);
 
-            int a = (Permutation[X] + Y) & 255;
-            int b = (Permutation[X + 1] + Y) & 255;
+            int a = Permutation[X] + Y & 255;
+            int b = Permutation[X + 1] + Y & 255;
 
             return Lerp(v,
                 Lerp(u, Grad(Permutation[a], x, y), Grad(Permutation[b], x - 1, y)),
@@ -27,8 +27,8 @@ namespace LitD.WorldModule
         private static float Grad(int hash, float x, float y)
         {
             int h = hash & 15;
-            float u = (h < 8) ? x : y;
-            float v = (h < 4) ? y : (h == 12 || h == 14 ? x : 0);
+            float u = h < 8 ? x : y;
+            float v = h < 4 ? y : h == 12 || h == 14 ? x : 0;
             return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
         }
 

@@ -1,5 +1,6 @@
 ﻿using LitD.System.Constants;
 using LitD.System.SerializableTypes;
+using LitD.WorldModule.WorldGeneration;
 using Microsoft.Xna.Framework;
 using ProtoBuf;
 using System;
