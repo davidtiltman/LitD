@@ -18,7 +18,7 @@ namespace LitD.WorldModule
             {
                 Regex forbiddenChars = new Regex("[/:]");
                 string worldDirectory = $"Saves/{forbiddenChars.Replace(DateTime.Now.ToString(), "_")}";
-                string worldFile = $"{worldDirectory}/{FileNameConstants.WORLD_FILE_NAME}";
+                string worldFile = $"{worldDirectory}/{FileNameConstants.WORLD_FILE_NAME}.{FileNameConstants.WORLD_FILE_EXTENSION}";
 
                 Directory.CreateDirectory(worldDirectory);
                 File.Create(worldFile).Close();
@@ -42,7 +42,7 @@ namespace LitD.WorldModule
         /// <summary> Загрузка существующего мира из файла. </summary>
         public static void LoadWorld(string worldDirectory, out World world)
         {
-            using (FileStream fileStream = new FileStream(Path.Combine(worldDirectory, FileNameConstants.WORLD_FILE_NAME), FileMode.Open))
+            using (FileStream fileStream = new FileStream(Path.Combine(worldDirectory, $"{FileNameConstants.WORLD_FILE_NAME}.{FileNameConstants.WORLD_FILE_EXTENSION}"), FileMode.Open))
             {
                 world = Serializer.Deserialize<World>(fileStream);
             }
