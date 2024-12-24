@@ -113,13 +113,21 @@ namespace LitD.WorldModule.WorldStructure
         }
 
         /// <summary> Выделенная логика отгрузки лишних регионов из памяти. </summary>
-        private void UnloadRegions()
+        /// <param name="observerPosition"> Координаты наблюдателя. </param>
+        private void UnloadRegions(Vector2 observerPosition)
         {
+            int observerX = (int)(observerPosition.X / (WorldConstants.REGION_WIDTH * WorldConstants.CHUNK_SIZE_IN_PIXELS));
+
             for (int i = 0; i < _loadedRegions.Count; i++)
             {
-                if (!_loadedRegions[i].IsVisible())
+                int regionX = _loadedRegions[i].Position;
+
+                int loadDistanceMin = observerX - WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
+                int loadDistanceMax = observerX + WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
+
+                if (regionX < loadDistanceMin || regionX > loadDistanceMax)
                 {
-                    // если в регионе нет видимых чанков, то регион сохраняется на диск и выгружается из памяти.
+                    // если регион находится за пределами дальности подгрузки, то он выгружается
                     //_loadedRegions[i].SaveRegion(_selfDirectory); // пока регионы чанки (следовательно регионы) нельзя никак изменять, поэтому нет нужды их сохранять
                     _loadedRegions.RemoveAt(i);
                 }
@@ -170,7 +178,7 @@ namespace LitD.WorldModule.WorldStructure
 
             if ((int)(gameTime.TotalGameTime.TotalSeconds) % WorldConstants.REGION_UNLOAD_FREQUENCY == 0)
             {
-                UnloadRegions();
+                UnloadRegions(observerPosition);
             }
         }
 
