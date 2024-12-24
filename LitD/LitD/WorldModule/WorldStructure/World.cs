@@ -209,7 +209,7 @@ namespace LitD.WorldModule.WorldStructure
             }
             else
             {
-                debugInfo += "\tNo chunks loaded\n";
+                debugInfo += "\tNo regions loaded\n";
             }
 
             if (_visibleChunks.Count > 0)
