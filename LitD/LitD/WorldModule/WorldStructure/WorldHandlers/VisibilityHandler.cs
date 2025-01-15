@@ -12,47 +12,64 @@ namespace LitD.WorldModule.WorldStructure.WorldServices
         public static void UpdateVisibleChunks(Vector2 observerPosition, ref List<Region> regions, ref List<Chunk> chunks)
         {
             chunks.Clear();
-
-            // конвертируем координаты наблюдателя в глобальные координаты чкнка
-            var observerChunkLocation = new Vector2(
+            // конвертируем координаты наблюдателя в координаты чкнка
+            Vector2 observerChunkPosition = new Vector2(
                 (float)Math.Floor(observerPosition.X / WorldConstants.CHUNK_SIZE_IN_PIXELS),
                 (float)Math.Floor(observerPosition.Y / WorldConstants.CHUNK_SIZE_IN_PIXELS)
             );
 
-            // регион наблюдателя
-            int observerRegionLocation = GetRegionXByChunkGlobalX((int)observerChunkLocation.X);
-
+            int observerRegionX = GetRegionXByChunkGlobalX((int)observerChunkPosition.X);
             int drawDistanceInRegions = (int)Math.Ceiling((decimal)WorldConstants.CHUNK_DRAW_DISTANCE / (decimal)WorldConstants.REGION_WIDTH);
-            int leftRegion = observerRegionLocation - drawDistanceInRegions;
-            int rightRegion = observerRegionLocation + drawDistanceInRegions;
 
-            // границы прямоугольника отрисовки
-            int topY    = (int)observerChunkLocation.Y - WorldConstants.CHUNK_DRAW_DISTANCE;
-            int bottomY = (int)observerChunkLocation.Y + WorldConstants.CHUNK_DRAW_DISTANCE;
+            /*
+             * NOT IMPLEMENTED
+             * TODO: разработать алгоритм, который будет подтягивать ТОЛЬКО НОВЫЕ видимые чанки,
+             * никак не взаимодействуя с чанками, которые по-прежнему видны.
+            
+            Vector2 previousObserverChunkLocation = new Vector2(
+                (float)Math.Floor(previousObserverPosition.X / WorldConstants.CHUNK_SIZE_IN_PIXELS),
+                (float)Math.Floor(previousObserverPosition.Y / WorldConstants.CHUNK_SIZE_IN_PIXELS)
+            );
+            
 
-            if (Math.Abs(topY) > Math.Abs(WorldConstants.WORLD_HIGHEST_CHUNK)) 
-                topY = WorldConstants.WORLD_HIGHEST_CHUNK;
-            if (Math.Abs(bottomY) > Math.Abs(WorldConstants.WORLD_LOWEST_CHUNK)) 
-                bottomY = WorldConstants.WORLD_LOWEST_CHUNK;
+            // направление движения наблюдателя. <0 = влево/вниз, >0 = вправо/вверх
+            int dx = (int)(observerChunkPosition.X - previousObserverChunkLocation.X);
+            int dy = (int)(observerChunkPosition.Y - previousObserverChunkLocation.Y);
 
-            try 
+            if (dx == 0) return; // игрок не сдвинулся. чанки не обновляем.
+            */
+
+            // вертикальные границы прорисовки
+            int topY = (int)(observerChunkPosition.Y + WorldConstants.CHUNK_DRAW_DISTANCE);
+            int bottomY = (int)(observerChunkPosition.Y - WorldConstants.CHUNK_DRAW_DISTANCE);
+
+            // границы по регионам
+            int leftRegion = observerRegionX - drawDistanceInRegions;
+            int rightRegion = observerRegionX + drawDistanceInRegions;
+
+            List<Chunk> nowVisible = new List<Chunk>();
+
+            for (int regPos = leftRegion; regPos <= rightRegion; regPos++)
             {
-                for (int x = leftRegion; x <= rightRegion; x++)
+                Region selectedRegion = regions.FirstOrDefault(region => region.Position == regPos);
+                if (selectedRegion != null)
                 {
-                    Region currentRegion = regions.FirstOrDefault(r => r.Position == x);
-
-                    if (currentRegion != null)
+                    try
                     {
-                        Chunk[] chunksInYRange = currentRegion.GetChunkArrayInYRange(topY, bottomY);
+                        Chunk[] inRangeY = selectedRegion.GetChunkArrayInYRange(topY, bottomY);
 
-                        foreach (Chunk chunk in chunksInYRange)
-                            chunks.Add(chunk);
+                        foreach (Chunk chunk in inRangeY)
+                        {
+                            if (Vector2.Distance(observerChunkPosition, chunk.Position) <= WorldConstants.CHUNK_DRAW_DISTANCE)
+                                chunks.Add(chunk);
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        throw new InvalidOperationException($"Failed to get visible chunks\n{e}");
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Failed to update visible chunks: {ex}");
             }
         }
 

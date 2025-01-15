@@ -49,11 +49,7 @@ namespace LitD.WorldModule.WorldStructure
             LoadHandler.LoadRegions(observerPosition, ref _loadedRegions, _selfDirectory);
             VisibilityHandler.UpdateVisibleChunks(observerPosition, ref _loadedRegions, ref _visibleChunks);
 
-            int unloadTimer = (int)(gameTime.TotalGameTime.TotalSeconds) % WorldConstants.REGION_UNLOAD_FREQUENCY;
-            if (unloadTimer == 0)
-            {
-                LoadHandler.UnloadRegions(observerPosition, ref _loadedRegions, _selfDirectory);
-            }
+            LoadHandler.UnloadRegions(gameTime, observerPosition, ref _loadedRegions, _selfDirectory);
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime, Vector2 observerPosition)

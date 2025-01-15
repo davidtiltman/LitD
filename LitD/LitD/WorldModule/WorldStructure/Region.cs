@@ -91,19 +91,16 @@ namespace LitD.WorldModule.WorldStructure
             int yOffset = Math.Abs(WorldConstants.WORLD_LOWEST_CHUNK);
             int index = -1;
 
-            for (int y = topY; y <= bottomY; y++)
+            for (int y = topY; y >= bottomY; y--)
             {
                 for (int x = 0; x < WorldConstants.REGION_WIDTH; x++)
                 {
-                    try
-                    {
-                        index = yOffset - y * WorldConstants.REGION_WIDTH + x;
-                        inRange.Add(_regionChunks[index]);
-                    }
-                    catch(Exception ex)
-                    {
-                        throw new IndexOutOfRangeException($"Y range is out of region's bounds [{topY};{bottomY}] -> index({index}): {ex}");
-                    }
+                    index = (yOffset + y) * WorldConstants.REGION_WIDTH + x;
+                    if (index < 0 ||
+                        index >= WorldConstants.REGION_WIDTH * (Math.Abs(WorldConstants.WORLD_LOWEST_CHUNK) + Math.Abs(WorldConstants.WORLD_HIGHEST_CHUNK)))
+                        continue;
+
+                    inRange.Add(_regionChunks[index]);
                 }
             }
 

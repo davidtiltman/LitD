@@ -85,22 +85,26 @@ namespace LitD.WorldModule.WorldStructure.WorldServices
 
         /// <summary> Отгружает регионы. </summary>
         /// <param name="observerPosition"> Координаты наблюдателя. </param>
-        public static void UnloadRegions(Vector2 observerPosition, ref List<Region> regions, string worldDirectory)
+        public static void UnloadRegions(GameTime gameTime, Vector2 observerPosition, ref List<Region> regions, string worldDirectory)
         {
-            int observerX = (int)(observerPosition.X / (WorldConstants.REGION_WIDTH * WorldConstants.CHUNK_SIZE_IN_PIXELS));
-
-            for (int i = 0; i < regions.Count; i++)
+            int unloadTimer = (int)(gameTime.TotalGameTime.TotalSeconds) % WorldConstants.REGION_UNLOAD_FREQUENCY;
+            if (unloadTimer == 0)
             {
-                int regionX = regions[i].Position;
+                int observerX = (int)(observerPosition.X / (WorldConstants.REGION_WIDTH * WorldConstants.CHUNK_SIZE_IN_PIXELS));
 
-                int loadDistanceMin = observerX - WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
-                int loadDistanceMax = observerX + WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
-
-                if (regionX < loadDistanceMin || regionX > loadDistanceMax)
+                for (int i = 0; i < regions.Count; i++)
                 {
-                    // если регион находится за пределами дальности подгрузки, то он выгружается
-                    regions[i].SaveRegion(worldDirectory);
-                    regions.RemoveAt(i);
+                    int regionX = regions[i].Position;
+
+                    int loadDistanceMin = observerX - WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
+                    int loadDistanceMax = observerX + WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
+
+                    if (regionX < loadDistanceMin || regionX > loadDistanceMax)
+                    {
+                        // если регион находится за пределами дальности подгрузки, то он выгружается
+                        regions[i].SaveRegion(worldDirectory);
+                        regions.RemoveAt(i);
+                    }
                 }
             }
         }
