@@ -21,7 +21,7 @@ namespace LitD.WorldModule
         public const int REGION_UNLOAD_FREQUENCY = 8;
 
         /// <summary> Ширина региона в чанках. </summary>
-        public const int REGION_WIDTH = 4;
+        public const int REGION_WIDTH = 8;
 
         /// <summary> Верхняя граница мира. </summary>
         public const int WORLD_HIGHEST_CHUNK = 32;

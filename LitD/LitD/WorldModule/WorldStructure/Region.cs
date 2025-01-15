@@ -60,13 +60,7 @@ namespace LitD.WorldModule.WorldStructure
         /// <returns> Список чанков. </returns>
         public List<Chunk> GetChunks()
         {
-            List<Chunk> chunks = new List<Chunk>();
-            foreach (var chunk in _regionChunks)
-            {
-                chunks.Add(chunk);
-            }
-
-            return chunks;
+            return _regionChunks;
         }
 
         /// <summary>
@@ -85,6 +79,37 @@ namespace LitD.WorldModule.WorldStructure
                 throw new IndexOutOfRangeException("New chunk position is out of region bounds");
             }
         }
+
+        /// <summary> Возвращает чанки региона в указанном отрезке по высоте. </summary>
+        /// <param name="topY"> Верхняя граница. </param>
+        /// <param name="bottomY"> Нижняя граница. </param>
+        /// <returns> Массив чанков. </returns>
+        public Chunk[] GetChunkArrayInYRange(int topY, int bottomY)
+        {
+            List<Chunk> inRange = new List<Chunk>();
+
+            int yOffset = Math.Abs(WorldConstants.WORLD_LOWEST_CHUNK);
+            int index = -1;
+
+            for (int y = topY; y <= bottomY; y++)
+            {
+                for (int x = 0; x < WorldConstants.REGION_WIDTH; x++)
+                {
+                    try
+                    {
+                        index = yOffset - y * WorldConstants.REGION_WIDTH + x;
+                        inRange.Add(_regionChunks[index]);
+                    }
+                    catch(Exception ex)
+                    {
+                        throw new IndexOutOfRangeException($"Y range is out of region's bounds [{topY};{bottomY}] -> index({index}): {ex}");
+                    }
+                }
+            }
+
+            return inRange.ToArray();
+        }
+           
 
         /// <summary> Сериализация региона. </summary>
         public void SaveRegion(string worldDirectory)
