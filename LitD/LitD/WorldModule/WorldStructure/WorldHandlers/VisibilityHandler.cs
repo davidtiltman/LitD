@@ -9,9 +9,10 @@ namespace LitD.WorldModule.WorldStructure.WorldServices
     {
         /// <summary> Выделенная логика обновления видимых чанков. </summary>
         /// <param name="observerPosition"></param>
-        public static void UpdateVisibleChunks(Vector2 observerPosition, ref List<Region> regions, ref List<Chunk> chunks)
+        public static void UpdateVisibleChunks(Vector2 observerPosition, ref List<Region> regions, ref List<Chunk> visibleChunks)
         {
-            chunks.Clear();
+            visibleChunks.Clear();
+
             // конвертируем координаты наблюдателя в координаты чкнка
             Vector2 observerChunkPosition = new Vector2(
                 (float)Math.Floor(observerPosition.X / WorldConstants.CHUNK_SIZE_IN_PIXELS),
@@ -49,19 +50,21 @@ namespace LitD.WorldModule.WorldStructure.WorldServices
 
             List<Chunk> nowVisible = new List<Chunk>();
 
+            // проходимся по всем регионам в пределах видимости
             for (int regPos = leftRegion; regPos <= rightRegion; regPos++)
             {
-                Region selectedRegion = regions.FirstOrDefault(region => region.Position == regPos);
+                Region selectedRegion = regions.FirstOrDefault(region => region?.Position == regPos);
                 if (selectedRegion != null)
                 {
                     try
                     {
+                        // и берем из этих регионов все чанки, попадающие в отрезок видимости по Y
                         Chunk[] inRangeY = selectedRegion.GetChunkArrayInYRange(topY, bottomY);
 
                         foreach (Chunk chunk in inRangeY)
                         {
                             if (Vector2.Distance(observerChunkPosition, chunk.Position) <= WorldConstants.CHUNK_DRAW_DISTANCE)
-                                chunks.Add(chunk);
+                                visibleChunks.Add(chunk);
                         }
 
                     }

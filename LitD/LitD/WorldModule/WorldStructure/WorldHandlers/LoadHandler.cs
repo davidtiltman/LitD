@@ -1,43 +1,71 @@
 ﻿using Microsoft.Xna.Framework;
 using ProtoBuf;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Threading;
 
-namespace LitD.WorldModule.WorldStructure.WorldServices
+namespace LitD.WorldModule.WorldStructure.WorldHandlers
 {
-    /// <summary> Загрзузчик/отгрузчик регионов. </summary>
+    /// <summary> Обработчик подгрузки регионов. </summary>
     internal class LoadHandler
     {
-        #region Load logic
+        private static Vector2 _observerPosition;
+        private static string _worldDirectory;
+        private static bool _isRunning = false;
+
+        private static Thread _loaderThread;
+
+        public static void Start()
+        {
+            if (!_isRunning)
+            {
+                _isRunning = true;
+
+                _loaderThread = new Thread(() => LoadRegions());
+                _loaderThread.Start();
+            }
+        }
+
+        public static void Stop()
+        {
+            _isRunning = false;
+        }
+
+        public static void UpdateData(Vector2 observerPosition, string worldDirectory)
+        {
+            _observerPosition = observerPosition;
+            _worldDirectory = worldDirectory;
+        }
 
         /// <summary> Загружает регионы рядом с наблюдателем. </summary>
         /// <param name="observerPosition"></param>
-        public static void LoadRegions(Vector2 observerPosition, ref List<Region> regions, string worldDirectory)
+        private static void LoadRegions()
         {
-            // проверяем, есть ли на координатах наблюдателя регион
-            // конвертируем координаты наблюдателя в координаты региона
-            int observerRegionLocation = (int)observerPosition.X / (WorldConstants.REGION_WIDTH * WorldConstants.CHUNK_SIZE_IN_PIXELS);
-
-            // подгружаем соседние от наблюдателя регионы
-            int regionX = observerRegionLocation - WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
-            int distance = observerRegionLocation + WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
-
-            for (; regionX < distance; regionX++)
+            while (_isRunning)
             {
-                Region region = IsRegionExists(regionX, regions, worldDirectory);
+                // проверяем, есть ли на координатах наблюдателя регион
+                // конвертируем координаты наблюдателя в координаты региона
+                int observerRegionLocation = (int)_observerPosition.X / (WorldConstants.REGION_WIDTH * WorldConstants.CHUNK_SIZE_IN_PIXELS);
 
-                if (region != null)
+                // подгружаем соседние от наблюдателя регионы
+                int regionX = observerRegionLocation - WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
+                int distance = observerRegionLocation + WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
+
+                for (; regionX < distance; regionX++)
                 {
-                    // регион существует И не загружен, добавляем его в список загруженных
-                    if (!regions.Contains(region))
+                    Region region = IsRegionExistsOnDisk(regionX, _worldDirectory);
+
+                    if (region != null)
                     {
-                        AddRegion(region, regions, worldDirectory);
+                        // регион существует
+                        RegionLoadQueue.Push(region);
                     }
-                }
-                else
-                {
-                    // регион НЕ существует
-                    AddRegion(new Region(regionX), regions, worldDirectory);
+                    else
+                    {
+                        // регион НЕ существует
+                        Region newRegion = new Region(regionX);
+                        RegionLoadQueue.Push(newRegion);
+                    }
                 }
             }
         }
@@ -46,15 +74,8 @@ namespace LitD.WorldModule.WorldStructure.WorldServices
         /// Проверяет, существует ли регион на указанных коориданах. </summary>
         /// <param name="position"> Кооридинаты региона. </param>
         /// <returns> Регион, если он существует. Null, если нет. </returns>
-        private static Region IsRegionExists(int xPosition, List<Region> regions, string worldDirectory)
+        private static Region IsRegionExistsOnDisk(int xPosition, string worldDirectory)
         {
-            // сначала ищем в памяти
-            foreach (Region region in regions)
-            {
-                if (region.Position == xPosition) return region;
-            }
-
-            // потом на диске
             try
             {
                 Region region = null;
@@ -69,46 +90,5 @@ namespace LitD.WorldModule.WorldStructure.WorldServices
                 return null;
             }
         }
-
-        /// <summary> Записывает в мир новый регион. </summary>
-        /// <param name="region"> Новый регион. </param>
-        private static void AddRegion(Region region, List<Region> regions, string worldDirectory)
-        {
-            regions.Add(region);
-            region.InitializeEntitySprites();
-            region.SaveRegion(worldDirectory);
-        }
-
-        #endregion
-
-        #region Unload logic
-
-        /// <summary> Отгружает регионы. </summary>
-        /// <param name="observerPosition"> Координаты наблюдателя. </param>
-        public static void UnloadRegions(GameTime gameTime, Vector2 observerPosition, ref List<Region> regions, string worldDirectory)
-        {
-            int unloadTimer = (int)(gameTime.TotalGameTime.TotalSeconds) % WorldConstants.REGION_UNLOAD_FREQUENCY;
-            if (unloadTimer == 0)
-            {
-                int observerX = (int)(observerPosition.X / (WorldConstants.REGION_WIDTH * WorldConstants.CHUNK_SIZE_IN_PIXELS));
-
-                for (int i = 0; i < regions.Count; i++)
-                {
-                    int regionX = regions[i].Position;
-
-                    int loadDistanceMin = observerX - WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
-                    int loadDistanceMax = observerX + WorldConstants.NEAR_REGIONS_LOAD_DISTANCE;
-
-                    if (regionX < loadDistanceMin || regionX > loadDistanceMax)
-                    {
-                        // если регион находится за пределами дальности подгрузки, то он выгружается
-                        regions[i].SaveRegion(worldDirectory);
-                        regions.RemoveAt(i);
-                    }
-                }
-            }
-        }
-
-        #endregion
     }
 }

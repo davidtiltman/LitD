@@ -105,6 +105,12 @@ namespace LitD
             base.Draw(gameTime);
         }
 
+        protected override void UnloadContent()
+        {
+            _world.StopThreads();
+            base.UnloadContent();
+        }
+
         #endregion
 
         #region служнебное

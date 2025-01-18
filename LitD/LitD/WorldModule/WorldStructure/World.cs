@@ -7,6 +7,10 @@ using System;
 using LitD.WorldModule.WorldStructure.WorldServices;
 using System.Threading;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Linq;
+using LitD.WorldModule.WorldStructure.WorldHandlers;
 
 namespace LitD.WorldModule.WorldStructure
 {
@@ -27,15 +31,25 @@ namespace LitD.WorldModule.WorldStructure
         [ProtoMember(2)]
         private string _selfDirectory;
 
+        private bool _regionLoadRunning;
+
         public World(string name, string selfDirectory)
         {
             Name = name;
             _selfDirectory = selfDirectory;
+            _regionLoadRunning = true;
+
+            LoadHandler.Start();
         }
 
         /// <summary> Пустой конструктор нужен для десериализации. </summary>
         private World()
         { }
+
+        public void StopThreads()
+        {
+            LoadHandler.Stop();
+        }
 
         #region Update/Draw
 
@@ -46,10 +60,11 @@ namespace LitD.WorldModule.WorldStructure
         /// <param name="observerRegionPosition"> Координаты наблюдателя. </param>
         public void Update(GameTime gameTime, Vector2 observerPosition)
         {
-            LoadHandler.LoadRegions(observerPosition, ref _loadedRegions, _selfDirectory);
-            VisibilityHandler.UpdateVisibleChunks(observerPosition, ref _loadedRegions, ref _visibleChunks);
+            LoadHandler.UpdateData(observerPosition, _selfDirectory);
 
-            LoadHandler.UnloadRegions(gameTime, observerPosition, ref _loadedRegions, _selfDirectory);
+            UpdateLoadedRegions();
+            VisibilityHandler.UpdateVisibleChunks(observerPosition, ref _loadedRegions, ref _visibleChunks);
+            UnloadHandler.UnloadRegions(gameTime, observerPosition, ref _loadedRegions, _selfDirectory);
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime, Vector2 observerPosition)
@@ -57,6 +72,18 @@ namespace LitD.WorldModule.WorldStructure
             foreach (var chunk in _visibleChunks)
             {
                 chunk.Draw(spriteBatch, gameTime);
+            }
+        }
+
+        private void UpdateLoadedRegions()
+        {
+            Region newRegion = RegionLoadQueue.Pop();
+
+            if (newRegion != null)
+            {
+                if (_loadedRegions.Select(lr => lr.Position).Contains(newRegion.Position)) return;
+
+                _loadedRegions.Add(newRegion);
             }
         }
 

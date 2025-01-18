@@ -23,6 +23,8 @@ namespace LitD.WorldModule.WorldStructure
         [ProtoMember(2)]
         private List<Chunk> _regionChunks = new List<Chunk>();
 
+        private readonly object _saveLock = new object();
+
         // это пока будет здесь, потому что константу нельзя объявить с использованием Math.Abs
         private static int _regionHeightInChunks = Math.Abs(WorldConstants.WORLD_HIGHEST_CHUNK) + Math.Abs(WorldConstants.WORLD_LOWEST_CHUNK);
         private static int _regionSizeInChunks = WorldConstants.REGION_WIDTH * _regionHeightInChunks;
@@ -132,15 +134,6 @@ namespace LitD.WorldModule.WorldStructure
             path += $"{xPosition}.{FileNameConstants.REGION_FILE_EXTENSION}";
 
             return path;
-        }
-
-        /// <summary> Инициализирует спрайты содержимых сущностей. </summary>
-        public void InitializeEntitySprites()
-        {
-            foreach (Chunk chunk in GetChunks())
-            {
-                chunk.InitializeEntitySprites();
-            }
         }
 
         /// <summary> Проверяет виден ли регион какому-либо наблюдателю. </summary>

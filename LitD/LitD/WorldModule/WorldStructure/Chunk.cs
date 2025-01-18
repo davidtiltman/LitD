@@ -72,6 +72,8 @@ namespace LitD.WorldModule.WorldStructure
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
+            InitializeEntitySprites();
+
             foreach (Entity tile in GetTiles())
             {
                 tile.Draw(spriteBatch, gameTime);
